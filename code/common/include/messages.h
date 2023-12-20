@@ -16,7 +16,20 @@ typedef struct
 typedef struct
 {
     char identifiant[ENTITY_ID_SIZE];
-} EstPresentCmd;
+} EstPresentElecteurCmd;
+typedef struct
+{
+    char identifiant[ENTITY_ID_SIZE];
+} AjoutVoteurCmd;
+typedef struct
+{
+    char identifiant[ENTITY_ID_SIZE];
+} SupprimeVoteurCmd;
+typedef struct
+{
+    char identifiant[ENTITY_ID_SIZE];
+} EstPresentVoteurCmd;
+
 
 typedef enum
 {
@@ -35,7 +48,10 @@ typedef struct
     {
         AjoutElecteurCmd ajoutElecteur;
         SupprimeElecteurCmd supprimeElecteur;
-        EstPresentCmd estPresent;
+        EstPresentElecteurCmd estPresentElecteur;
+        AjoutVoteurCmd ajoutVoteur;
+        SupprimeVoteurCmd supprimeVoteur;
+        EstPresentVoteurCmd estPresentVoteur;
     } commande;
 } Commande;
 

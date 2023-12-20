@@ -16,27 +16,40 @@ typedef struct
 typedef struct
 {
     char identifiant[ENTITY_ID_SIZE];
-} EstPresentElecteurCmd;
-typedef struct
-{
-    char identifiant[ENTITY_ID_SIZE];
-} AjoutVoteurCmd;
-typedef struct
-{
-    char identifiant[ENTITY_ID_SIZE];
-} SupprimeVoteurCmd;
-typedef struct
-{
-    char identifiant[ENTITY_ID_SIZE];
-} EstPresentVoteurCmd;
+} EstPresentCmd;
 
+typedef struct
+{
+    char identifiant[ENTITY_ID_SIZE];
+} ModifierElecteurCmd;
+
+typedef struct
+{
+    char identifiant[ENTITY_ID_SIZE];
+} ValiderVoteCmd;
 
 typedef enum
 {
     NOP = 0,
-    AJOUT_ELECTEUR,
-    SUPPRIME_ELECTEUR,
-    EST_PRESENT
+    /* Commandes pour les électeurs */
+    AJOUT_ELECTEUR, // Commande pour ajouter un électeur
+    SUPPRIME_ELECTEUR, // Commande pour supprimer un électeur
+    LIRE_ELECTEUR, //Commande pour lire les informations d'un électeur
+    MODIFIER_ELECTEUR, //Commande pour modifier un électeur
+
+    EST_PRESENT, //Commande qui vérifie si un électeur est présent dans la liste des électeurs
+
+    /* Commandes pour les élections */
+    CREER_ELECTION,
+    MODIFIER_ELECTION,
+    LIRE_ELECTION,
+    SUPPRIMER_ELECTION,
+
+    RESULTAT_ELECTION,
+
+    /* Commandes pour la gestion des votes */
+    VOTER,
+    VALIDER_VOTE
 } CommandType;
 
 //--
@@ -48,10 +61,9 @@ typedef struct
     {
         AjoutElecteurCmd ajoutElecteur;
         SupprimeElecteurCmd supprimeElecteur;
-        EstPresentElecteurCmd estPresentElecteur;
-        AjoutVoteurCmd ajoutVoteur;
-        SupprimeVoteurCmd supprimeVoteur;
-        EstPresentVoteurCmd estPresentVoteur;
+        EstPresentCmd estPresent;
+        ModifierElecteurCmd modifierElecteur; // Nouvelle commande
+        ValiderVoteCmd validerVote;           // Nouvelle commande
     } commande;
 } Commande;
 

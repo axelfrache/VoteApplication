@@ -3,59 +3,46 @@
 
 #include "protocol.h"
 
-typedef struct
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
-typedef struct
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } SupprimeElecteurCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } LireElecteurCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } ModifierElecteurCmd;
-typedef struct
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } EstPresentCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } CreerElectionCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } ModifierElectionCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } LireElectionCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } SupprimerElectionCmd;
-typedef struct 
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } ResultatElectionCmd;
-typedef struct 
-{
+typedef struct {
     char identifiantVotant[ENTITY_ID_SIZE];
     char identifiantElection[ENTITY_ID_SIZE];
     char bulletin[ENTITY_ID_SIZE];
 } VoterCmd;
-typedef struct
-{
+typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } ValiderVoteCmd;
 
-typedef enum
-{
+typedef enum {
     NOP = 0,
     /* Commandes pour les électeurs */
 
@@ -81,30 +68,28 @@ typedef enum
 } CommandType;
 
 //--
-typedef struct
-{
+typedef struct {
     CommandType type;
     char signature[256]; // la signature de la commande
-    union
-    {
+    union {
         //Electeur
         AjoutElecteurCmd ajoutElecteur;
         ModifierElectionCmd modifierElection;
         LireElecteurCmd lireElecteur;
         SupprimeElecteurCmd supprimeElecteur;
-        
+
         EstPresentCmd estPresent;
-        
+
         //Election
         CreerElectionCmd creerElection;
         ModifierElectionCmd modifierElecteur;
         LireElectionCmd lireElection;
-        ModifierElecteurCmd modifierElecteur; 
+        ModifierElecteurCmd modifierElecteurCmd;
         SupprimerElectionCmd supprimerElection;
         ResultatElectionCmd relutatElection;
         // Vote
         VoterCmd voter;
-        ValiderVoteCmd validerVote;           
+        ValiderVoteCmd validerVote;
 
     } commande;
 } Commande;

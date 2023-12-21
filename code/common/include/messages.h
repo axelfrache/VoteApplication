@@ -32,6 +32,7 @@ typedef enum
 {
     NOP = 0,
     /* Commandes pour les électeurs */
+
     AJOUT_ELECTEUR, // Commande pour ajouter un électeur
     SUPPRIME_ELECTEUR, // Commande pour supprimer un électeur
     LIRE_ELECTEUR, //Commande pour lire les informations d'un électeur
@@ -40,6 +41,7 @@ typedef enum
     EST_PRESENT, //Commande qui vérifie si un électeur est présent dans la liste des électeurs
 
     /* Commandes pour les élections */
+
     CREER_ELECTION,
     MODIFIER_ELECTION,
     LIRE_ELECTION,

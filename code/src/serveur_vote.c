@@ -52,30 +52,87 @@ Commande dequeueCommand() {
 
 // Thread pour la réception des commandes
 void* receiveCommands(void* arg) {
+    char buffer[1024];
+
     while (1) {
-        // Logique pour recevoir des commandes
-        // Exemple : Commande cmd = recevoirCommande();
-        // enqueueCommand(cmd);
+        printf("Entrez une commande: ");
+        if (fgets(buffer, 1024, stdin) == NULL) {
+            break; // Sortie de la boucle si erreur ou fin de fichier
+        }
+
+        Commande cmd;
+        memset(&cmd, 0, sizeof(cmd)); // Initialisation de la structure Commande
+
+        // Exemple de décodage de la commande à partir de l'entrée
+        // NOTE: Ceci est un exemple très simplifié pour démontrer le concept
+        if (strncmp(buffer, "AJOUT", 5) == 0) {
+            cmd.type = AJOUT_ELECTEUR;
+            strcpy(cmd.commande.ajoutElecteur.identifiant, "Identifiant_Electeur");
+        } else if (strncmp(buffer, "SUPPRIME", 8) == 0) {
+            cmd.type = SUPPRIME_ELECTEUR;
+            strcpy(cmd.commande.supprimeElecteur.identifiant, "Identifiant_Electeur");
+        } else if (strncmp(buffer, "PRESENT", 7) == 0) {
+            cmd.type = EST_PRESENT;
+            strcpy(cmd.commande.estPresent.identifiant, "Identifiant_Electeur");
+        } else {
+            printf("Commande non reconnue\n");
+            continue;
+        }
+
+        enqueueCommand(cmd);
     }
+
     return NULL;
 }
 
+/**
+ * Fonctions de traitement des commandes
+ */
+void traitementAjoutElecteur(AjoutElecteurCmd *cmd) {
+    printf("Traitement AjoutElecteurCmd\n");
+    // Implémentation spécifique pour AjoutElecteurCmd
+}
+
+void traitementSupprimeElecteur(SupprimeElecteurCmd *cmd) {
+    printf("Traitement SupprimeElecteurCmd\n");
+    // Implémentation spécifique pour SupprimeElecteurCmd
+}
+
+void traitementEstPresent(EstPresentCmd *cmd) {
+    printf("Traitement EstPresentCmd\n");
+    // Implémentation spécifique pour EstPresentCmd
+}
 // Thread pour le traitement des commandes
 void* processCommands(void* arg) {
     while (1) {
         Commande cmd = dequeueCommand();
-        // Logique de traitement des commandes
-        // Exemple : processCommand(&cmd);
+        switch (cmd.type) {
+            case AJOUT_ELECTEUR:
+                traitementAjoutElecteur(&cmd.commande.ajoutElecteur);
+                break;
+            case SUPPRIME_ELECTEUR:
+                traitementSupprimeElecteur(&cmd.commande.supprimeElecteur);
+                break;
+            case EST_PRESENT:
+                traitementEstPresent(&cmd.commande.estPresent);
+                break;
+                // Ajoutez ici des cas pour les autres types de commandes
+            default:
+                printf("Type de commande non reconnu\n");
+        }
     }
     return NULL;
 }
 
+
 int main(int argc, char *argv[]) {
     pthread_t threadReceiver, threadProcessor;
 
+    // Création des threads pour la réception et le traitement des commandes
     pthread_create(&threadReceiver, NULL, receiveCommands, NULL);
     pthread_create(&threadProcessor, NULL, processCommands, NULL);
 
+    // Attente de la fin des threads
     pthread_join(threadReceiver, NULL);
     pthread_join(threadProcessor, NULL);
 

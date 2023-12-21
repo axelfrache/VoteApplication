@@ -1,4 +1,6 @@
 #include "./../common/include//messages.h"
+#include "bd.c"
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -51,6 +53,7 @@ Commande dequeueCommand() {
 }
 
 // Thread pour la réception des commandes
+// Client temporaire pour la démonstration
 void* receiveCommands(void* arg) {
     char buffer[1024];
 
@@ -126,7 +129,26 @@ void* processCommands(void* arg) {
 
 
 int main(int argc, char *argv[]) {
+
     pthread_t threadReceiver, threadProcessor;
+
+    // Initialisation de la base de données
+    const char *dbPath = "./../data_base/base_de_donnees.db";
+    sqlite3 *db;
+
+    // Ouvrir ou créer la base de données si elle n'existe pas
+    db = database_open(dbPath);
+    if (!db) {
+        fprintf(stderr, "Impossible d'ouvrir ou de créer la base de données.\n");
+        return 1;
+    }
+
+    // Initialiser la base de données en créant les tables nécessaires
+    if (database_init(db) != 0) {
+        fprintf(stderr, "Erreur lors de l'initialisation de la base de données.\n");
+        sqlite3_close(db);
+        return 1;
+    }
 
     // Création des threads pour la réception et le traitement des commandes
     pthread_create(&threadReceiver, NULL, receiveCommands, NULL);
@@ -135,6 +157,11 @@ int main(int argc, char *argv[]) {
     // Attente de la fin des threads
     pthread_join(threadReceiver, NULL);
     pthread_join(threadProcessor, NULL);
+
+    // Fermeture de la base de données
+    if (database_close(db) != 0) {
+        fprintf(stderr, "Erreur lors de la fermeture de la base de données.\n");
+    }
 
     return 0;
 }

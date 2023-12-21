@@ -7,22 +7,48 @@ typedef struct
 {
     char identifiant[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
-
 typedef struct
 {
     char identifiant[ENTITY_ID_SIZE];
 } SupprimeElecteurCmd;
-
+typedef struct 
+{
+    char identifiant[ENTITY_ID_SIZE];
+} LireElecteurCmd;
+typedef struct 
+{
+    char identifiant[ENTITY_ID_SIZE];
+} ModifierElecteurCmd;
 typedef struct
 {
     char identifiant[ENTITY_ID_SIZE];
 } EstPresentCmd;
-
-typedef struct
+typedef struct 
 {
     char identifiant[ENTITY_ID_SIZE];
-} ModifierElecteurCmd;
-
+} CreerElectionCmd;
+typedef struct 
+{
+    char identifiant[ENTITY_ID_SIZE];
+} ModifierElectionCmd;
+typedef struct 
+{
+    char identifiant[ENTITY_ID_SIZE];
+} LireElectionCmd;
+typedef struct 
+{
+    char identifiant[ENTITY_ID_SIZE];
+} SupprimerElectionCmd;
+typedef struct 
+{
+    char identifiant[ENTITY_ID_SIZE];
+} ResultatElectionCmd;
+typedef struct 
+{
+    char identifiantVotant[ENTITY_ID_SIZE];
+    char identifiantElection[ENTITY_ID_SIZE];
+    char bulletin[ENTITY_ID_SIZE];
+} VoterCmd;
 typedef struct
 {
     char identifiant[ENTITY_ID_SIZE];
@@ -61,11 +87,25 @@ typedef struct
     char signature[256]; // la signature de la commande
     union
     {
+        //Electeur
         AjoutElecteurCmd ajoutElecteur;
+        ModifierElectionCmd modifierElection;
+        LireElecteurCmd lireElecteur;
         SupprimeElecteurCmd supprimeElecteur;
+        
         EstPresentCmd estPresent;
-        ModifierElecteurCmd modifierElecteur; // Nouvelle commande
-        ValiderVoteCmd validerVote;           // Nouvelle commande
+        
+        //Election
+        CreerElectionCmd creerElection;
+        ModifierElectionCmd modifierElecteur;
+        LireElectionCmd lireElection;
+        ModifierElecteurCmd modifierElecteur; 
+        SupprimerElectionCmd supprimerElection;
+        ResultatElectionCmd relutatElection;
+        // Vote
+        VoterCmd voter;
+        ValiderVoteCmd validerVote;           
+
     } commande;
 } Commande;
 

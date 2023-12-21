@@ -9,7 +9,7 @@
 #define MAX_COMMANDS 100
 
 // Structure du tableau circulaire pour les commandes
-Commande commandQueue[MAX_COMMANDS];
+Commande* commandQueue[MAX_COMMANDS];
 int queueStart = 0;
 int queueEnd = 0;
 
@@ -19,11 +19,10 @@ pthread_cond_t condQueueNotEmpty = PTHREAD_COND_INITIALIZER;
 pthread_cond_t condQueueNotFull = PTHREAD_COND_INITIALIZER;
 
 // Ajouter une commande dans le tableau circulaire
-void enqueueCommand(Commande cmd) {
+void enqueueCommand(Commande *cmd) {
     pthread_mutex_lock(&mutexQueue);
 
     while ((queueEnd + 1) % MAX_COMMANDS == queueStart) {
-        // Attendre qu'il y ait de la place dans le tableau
         pthread_cond_wait(&condQueueNotFull, &mutexQueue);
     }
 
@@ -32,18 +31,20 @@ void enqueueCommand(Commande cmd) {
 
     pthread_cond_signal(&condQueueNotEmpty);
     pthread_mutex_unlock(&mutexQueue);
+
+
 }
 
+
 // Récupérer une commande du tableau circulaire
-Commande dequeueCommand() {
+Commande* dequeueCommand() {
     pthread_mutex_lock(&mutexQueue);
 
     while (queueStart == queueEnd) {
-        // Attendre qu'une commande soit disponible
         pthread_cond_wait(&condQueueNotEmpty, &mutexQueue);
     }
 
-    Commande cmd = commandQueue[queueStart];
+    Commande *cmd = commandQueue[queueStart];
     queueStart = (queueStart + 1) % MAX_COMMANDS;
 
     pthread_cond_signal(&condQueueNotFull);
@@ -58,31 +59,33 @@ void* receiveCommands(void* arg) {
     char buffer[1024];
 
     while (1) {
-        printf("Entrez une commande: ");
+        printf("Entrez une commande: \n");
         if (fgets(buffer, 1024, stdin) == NULL) {
             break; // Sortie de la boucle si erreur ou fin de fichier
         }
 
-        Commande cmd;
-        memset(&cmd, 0, sizeof(cmd)); // Initialisation de la structure Commande
+        Commande *cmd = malloc(sizeof(Commande));
+        memset(cmd, 0, sizeof(Commande)); // Initialisation de la commande
 
         // Exemple de décodage de la commande à partir de l'entrée
         // NOTE: Ceci est un exemple très simplifié pour démontrer le concept
         if (strncmp(buffer, "AJOUT", 5) == 0) {
-            cmd.type = AJOUT_ELECTEUR;
-            strcpy(cmd.commande.ajoutElecteur.identifiant, "Identifiant_Electeur");
+            cmd->type = AJOUT_ELECTEUR;
+            strcpy(cmd->commande.ajoutElecteur.identifiant, "Identifiant_Electeur");
         } else if (strncmp(buffer, "SUPPRIME", 8) == 0) {
-            cmd.type = SUPPRIME_ELECTEUR;
-            strcpy(cmd.commande.supprimeElecteur.identifiant, "Identifiant_Electeur");
+            cmd->type = SUPPRIME_ELECTEUR;
+            strcpy(cmd->commande.supprimeElecteur.identifiant, "Identifiant_Electeur");
         } else if (strncmp(buffer, "PRESENT", 7) == 0) {
-            cmd.type = EST_PRESENT;
-            strcpy(cmd.commande.estPresent.identifiant, "Identifiant_Electeur");
+            cmd->type = EST_PRESENT;
+            strcpy(cmd->commande.estPresent.identifiant, "Identifiant_Electeur");
         } else {
             printf("Commande non reconnue\n");
             continue;
         }
 
+
         enqueueCommand(cmd);
+
     }
 
     return NULL;
@@ -108,21 +111,22 @@ void traitementEstPresent(EstPresentCmd *cmd) {
 // Thread pour le traitement des commandes
 void* processCommands(void* arg) {
     while (1) {
-        Commande cmd = dequeueCommand();
-        switch (cmd.type) {
+        Commande *cmd = dequeueCommand();
+        switch (cmd->type) {
             case AJOUT_ELECTEUR:
-                traitementAjoutElecteur(&cmd.commande.ajoutElecteur);
+                traitementAjoutElecteur(&cmd->commande.ajoutElecteur);
                 break;
             case SUPPRIME_ELECTEUR:
-                traitementSupprimeElecteur(&cmd.commande.supprimeElecteur);
+                traitementSupprimeElecteur(&cmd->commande.supprimeElecteur);
                 break;
             case EST_PRESENT:
-                traitementEstPresent(&cmd.commande.estPresent);
+                traitementEstPresent(&cmd->commande.estPresent);
                 break;
                 // Ajoutez ici des cas pour les autres types de commandes
             default:
                 printf("Type de commande non reconnu\n");
         }
+        free(cmd); // Ajouter cette ligne après le traitement de la commande
     }
     return NULL;
 }

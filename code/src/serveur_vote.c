@@ -144,7 +144,6 @@ void* processCommands(void* arg) {
             case EST_PRESENT:
                 traitementEstPresent(&cmd->commande.estPresent);
                 break;
-                // Ajoutez ici des cas pour les autres types de commandes
             default:
                 printf("Type de commande non reconnu\n");
         }

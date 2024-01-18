@@ -12,29 +12,42 @@ extern void* processCommands(void* arg);
 // Client temporaire pour la démonstration
 void* receiveCommands(void* arg) {
     char buffer[1024];
+    char identifiant[ENTITY_ID_SIZE]; // Assurez-vous que ENTITY_ID_SIZE est défini correctement
 
     while (1) {
         printf("Entrez une commande: \n");
         if (fgets(buffer, 1024, stdin) == NULL) {
-            break; // Sortie de la boucle si erreur ou fin de fichier
+            break;
         }
 
         Commande *cmd = malloc(sizeof(Commande));
-        memset(cmd, 0, sizeof(Commande)); // Initialisation de la commande
+        if (!cmd) {
+            fprintf(stderr, "Erreur d'allocation mémoire\n");
+            continue;
+        }
+        memset(cmd, 0, sizeof(Commande));
 
-        // Exemple de décodage de la commande à partir de l'entrée
-        // NOTE: Ceci est un exemple très simplifié pour démontrer le concept
         if (strncmp(buffer, "AJOUT", 5) == 0) {
-            cmd->type = AJOUT_ELECTEUR;
-            strcpy(cmd->commande.ajoutElecteur.identifiant, "miaou");
+            printf("Entrez l'identifiant de l'électeur à ajouter: ");
+            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
+                cmd->type = AJOUT_ELECTEUR;
+                strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            }
         } else if (strncmp(buffer, "SUPPRIME", 8) == 0) {
-            cmd->type = SUPPRIME_ELECTEUR;
-            strcpy(cmd->commande.supprimeElecteur.identifiant, "Identifiant_Electeur");
+            printf("Entrez l'identifiant de l'électeur à supprimer: ");
+            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
+                cmd->type = SUPPRIME_ELECTEUR;
+                strncpy(cmd->commande.supprimeElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            }
         } else if (strncmp(buffer, "PRESENT", 7) == 0) {
-            cmd->type = EST_PRESENT;
-            strcpy(cmd->commande.estPresent.identifiant, "Identifiant_Electeur");
+            printf("Entrez l'identifiant de l'électeur à vérifier: ");
+            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
+                cmd->type = EST_PRESENT;
+                strncpy(cmd->commande.estPresent.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            }
         } else {
             printf("Commande non reconnue\n");
+            free(cmd);
             continue;
         }
         enqueueCommand(cmd);

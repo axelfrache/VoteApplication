@@ -1,5 +1,7 @@
-#include "./../common/include//messages.h"
+#include "./../common/include/messages.h"
 #include "./../common/include/bd.h"
+#include "../common/include/util.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -104,6 +106,14 @@ void traitementSupprimeElecteur(SupprimeElecteurCmd *cmd) {
     sqlite3_close(db);
 }
 
+void traitementLireElecteur(LireElecteurCmd *cmd){
+    printf("LireElection");
+}
+
+void traitementModifierElecteur(ModifierElecteurCmd *cmd){
+
+}
+
 void traitementEstPresent(EstPresentCmd *cmd) {
     printf("Traitement EstPresentCmd\n");
     if (cmd == NULL || cmd->identifiant[0] == '\0') {
@@ -130,6 +140,23 @@ void traitementEstPresent(EstPresentCmd *cmd) {
     sqlite3_close(db);
 }
 
+<<<<<<< HEAD
+=======
+void traitementCreerElection(CreerElectionCmd *cmd){
+
+}
+
+void traitementModifierElection(ModifierElectionCmd *cmd){
+
+}
+void traitementLireElection(LireElectionCmd *cmd){
+
+}
+void traitementSupprimerElection(SupprimerElectionCmd *cmd){
+    
+}
+
+>>>>>>> 1e9a36d (commands added)
 // Thread pour le traitement des commandes
 void* processCommands(void* arg) {
     while (1) {
@@ -141,8 +168,30 @@ void* processCommands(void* arg) {
             case SUPPRIME_ELECTEUR:
                 traitementSupprimeElecteur(&cmd->commande.supprimeElecteur);
                 break;
+            case LIRE_ELECTEUR:
+                traitementLireElecteur(&cmd->commande.lireElecteur);
+                break;
+            case MODIFIER_ELECTEUR:
+                traitementModifierElecteur(&cmd->commande.modifierElecteur);
+                break;
             case EST_PRESENT:
                 traitementEstPresent(&cmd->commande.estPresent);
+<<<<<<< HEAD
+=======
+                break; 
+                // Ajoutez ici des cas pour les autres types de commandes
+            case CREER_ELECTION: 
+                traitementCreerElection(&cmd->commande.creerElection);
+                break;
+            case MODIFIER_ELECTEUR:
+                traitementModifierElection(&cmd->commande.modifierElection);
+                break;
+            case LIRE_ELECTION:
+                traitementLireElection(&cmd->commande.lireElection);
+                break;
+            case SUPPRIMER_ELECTION:
+                traitementSupprimerElection(&cmd->commande.supprimerElection);
+>>>>>>> 1e9a36d (commands added)
                 break;
             default:
                 printf("Type de commande non reconnu\n");

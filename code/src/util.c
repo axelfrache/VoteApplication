@@ -1,4 +1,4 @@
-#include "../../common/include/common.h"
+#include "../common/include/common.h"
 
 // Fonction de gestion d'erreurs
 

@@ -58,7 +58,23 @@ Commande* dequeueCommand() {
  */
 void traitementAjoutElecteur(AjoutElecteurCmd *cmd) {
     printf("Traitement AjoutElecteurCmd\n");
-    // Implémentation spécifique pour AjoutElecteurCmd
+    if (cmd == NULL || cmd->identifiant[0] == '\0') {
+        printf("Commande invalide ou identifiant manquant.\n");
+        return;
+    }
+
+    // Ouvrir la base de données (assurez-vous que le chemin est correct)
+    sqlite3 *db;
+    if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
+        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    // Appeler createElecteur
+    createElecteur(db, cmd->identifiant, ENTITY_ID_SIZE); // ENTITY_ID_SIZE est la taille de l'identifiant.
+
+    // Fermer la base de données
+    sqlite3_close(db);
 }
 
 void traitementSupprimeElecteur(SupprimeElecteurCmd *cmd) {

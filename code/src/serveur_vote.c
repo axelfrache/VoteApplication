@@ -32,7 +32,6 @@ void enqueueCommand(Commande *cmd) {
     pthread_cond_signal(&condQueueNotEmpty);
     pthread_mutex_unlock(&mutexQueue);
 
-
 }
 
 
@@ -45,6 +44,7 @@ Commande* dequeueCommand() {
     }
 
     Commande *cmd = commandQueue[queueStart];
+    
     queueStart = (queueStart + 1) % MAX_COMMANDS;
 
     pthread_cond_signal(&condQueueNotFull);

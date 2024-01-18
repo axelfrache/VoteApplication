@@ -79,7 +79,23 @@ void traitementAjoutElecteur(AjoutElecteurCmd *cmd) {
 
 void traitementSupprimeElecteur(SupprimeElecteurCmd *cmd) {
     printf("Traitement SupprimeElecteurCmd\n");
-    // Implémentation spécifique pour SupprimeElecteurCmd
+    if (cmd == NULL || cmd->identifiant[0] == '\0') {
+        printf("Commande invalide ou identifiant manquant.\n");
+        return;
+    }
+
+    // Ouvrir la base de données
+    sqlite3 *db;
+    if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
+        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    // Appeler deleteElecteur
+    deleteElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
+
+    // Fermer la base de données
+    sqlite3_close(db);
 }
 
 void traitementEstPresent(EstPresentCmd *cmd) {

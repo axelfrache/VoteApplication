@@ -5,7 +5,6 @@
 #include "./../common/include/bd.h"
 #include <pthread.h>
 
-
 extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
 

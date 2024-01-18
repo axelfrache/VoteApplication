@@ -8,7 +8,7 @@ SRCDIR=.
 LIBDIR=$(BUILDDIR)/lib
 OBJDIR=$(BUILDDIR)/obj
 LIBNAME=libvoting.a
-
+DEPS=main_Serveur.c bd.c serveur_vote.c
 # Liste de tous les fichiers source
 SRC := $(wildcard $(SRCDIR)/*.c)
 
@@ -21,7 +21,8 @@ $(shell mkdir -p $(LIBDIR) $(OBJDIR))
 # Cible par défaut
 all: $(LIBDIR)/$(LIBNAME)
 	
-
+main: $(DEPS)
+	clang -o $(BUILDDIR)/main main_Serveur.c bd.c serveur_vote.c `pkg-config --cflags --libs glib-2.0` `pkg-config --libs sqlite3` 
 
 # Règle pour construire la bibliothèque
 $(LIBDIR)/$(LIBNAME): $(OBJ)

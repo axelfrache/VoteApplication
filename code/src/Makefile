@@ -23,7 +23,7 @@ $(shell mkdir -p $(LIBDIR) $(OBJDIR))
 all: $(LIBDIR)/$(LIBNAME)
 	
 main: $(DEPS)
-	clang -o $(BUILDDIR)/main main_Serveur.c bd.c serveur_vote.c `pkg-config --cflags --libs glib-2.0` `pkg-config --libs sqlite3` 
+	gcc -o $(BUILDDIR)/main main_Serveur.c bd.c serveur_vote.c `pkg-config --cflags --libs glib-2.0` `pkg-config --libs sqlite3`
 
 # Règle pour construire la bibliothèque
 $(LIBDIR)/$(LIBNAME): $(OBJ)

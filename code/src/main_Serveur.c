@@ -26,7 +26,7 @@ void* receiveCommands(void* arg) {
         // NOTE: Ceci est un exemple très simplifié pour démontrer le concept
         if (strncmp(buffer, "AJOUT", 5) == 0) {
             cmd->type = AJOUT_ELECTEUR;
-            strcpy(cmd->commande.ajoutElecteur.identifiant, "Identifiant_Electeur");
+            strcpy(cmd->commande.ajoutElecteur.identifiant, "miaou");
         } else if (strncmp(buffer, "SUPPRIME", 8) == 0) {
             cmd->type = SUPPRIME_ELECTEUR;
             strcpy(cmd->commande.supprimeElecteur.identifiant, "Identifiant_Electeur");

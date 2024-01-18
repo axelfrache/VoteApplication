@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     pthread_t threadReceiver, threadProcessor;
 
     // Initialisation de la base de données
-    const char *dbPath = "./../data_base/base_de_donnees.db";
+    const char *dbPath = "../data_base/base_de_donnees.db";
     sqlite3 *db;
 
     // Ouvrir ou créer la base de données si elle n'existe pas

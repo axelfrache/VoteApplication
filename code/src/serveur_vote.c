@@ -32,7 +32,6 @@ void enqueueCommand(Commande *cmd) {
     pthread_cond_signal(&condQueueNotEmpty);
     pthread_mutex_unlock(&mutexQueue);
 
-
 }
 
 

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "./../common/include/util.h"
 
 #define MAX_COMMANDS 100
 
@@ -23,11 +24,14 @@ void enqueueCommand(Commande *cmd) {
     pthread_mutex_lock(&mutexQueue);
 
     while ((queueEnd + 1) % MAX_COMMANDS == queueStart) {
+        notif(RED, "Buffer plein, en attente d'une place...\\n");
         pthread_cond_wait(&condQueueNotFull, &mutexQueue);
     }
 
     commandQueue[queueEnd] = cmd;
     queueEnd = (queueEnd + 1) % MAX_COMMANDS;
+
+    notif(GREEN, "Commande ajoutée au buffer.\\n");
 
     pthread_cond_signal(&condQueueNotEmpty);
     pthread_mutex_unlock(&mutexQueue);
@@ -40,6 +44,7 @@ Commande* dequeueCommand() {
     pthread_mutex_lock(&mutexQueue);
 
     while (queueStart == queueEnd) {
+        notif(RED, "Buffer vide, en attente d'une commande...");
         pthread_cond_wait(&condQueueNotEmpty, &mutexQueue);
     }
 
@@ -47,6 +52,7 @@ Commande* dequeueCommand() {
     
     queueStart = (queueStart + 1) % MAX_COMMANDS;
 
+    notif(GREEN, "Commande récupérée du buffer.");
     pthread_cond_signal(&condQueueNotFull);
     pthread_mutex_unlock(&mutexQueue);
 

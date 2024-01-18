@@ -44,6 +44,7 @@ Commande* dequeueCommand() {
     }
 
     Commande *cmd = commandQueue[queueStart];
+    
     queueStart = (queueStart + 1) % MAX_COMMANDS;
 
     pthread_cond_signal(&condQueueNotFull);

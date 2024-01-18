@@ -8,7 +8,8 @@ SRCDIR=.
 LIBDIR=$(BUILDDIR)/lib
 OBJDIR=$(BUILDDIR)/obj
 LIBNAME=libvoting.a
-DEPS=main_Serveur.c bd.c serveur_vote.c
+DEPS=main_Serveur.c bd.c serveur_vote.c util.c
+
 # Liste de tous les fichiers source
 SRC := $(wildcard $(SRCDIR)/*.c)
 

@@ -26,6 +26,4 @@ void err_n_die(char *message, ...);
 
 void notif(enum Color color, char* format, ...);
 
-char* eliminerEntreesStardardPath(char *path);
-
 #endif /* COMMON_H */

@@ -3,6 +3,8 @@
 
 #include "protocol.h"
 
+#define COMMAND_NUMBER 12
+
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
@@ -65,6 +67,7 @@ typedef enum {
     /* Commandes pour la gestion des votes */
     VOTER,
     VALIDER_VOTE
+
 } CommandType;
 
 //--
@@ -74,7 +77,7 @@ typedef struct {
     union {
         //Electeur
         AjoutElecteurCmd ajoutElecteur;
-        ModifierElectionCmd modifierElection;
+        ModifierElecteurCmd modifierElecteur;
         LireElecteurCmd lireElecteur;
         SupprimeElecteurCmd supprimeElecteur;
 
@@ -82,9 +85,8 @@ typedef struct {
 
         //Election
         CreerElectionCmd creerElection;
-        ModifierElectionCmd modifierElecteur;
         LireElectionCmd lireElection;
-        ModifierElecteurCmd modifierElecteurCmd;
+        ModifierElectionCmd modifierElection;
         SupprimerElectionCmd supprimerElection;
         ResultatElectionCmd relutatElection;
         // Vote

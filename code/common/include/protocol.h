@@ -35,4 +35,5 @@ typedef struct
     char hashValidation[256];
 } Vote;
 
+
 #endif

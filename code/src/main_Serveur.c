@@ -3,54 +3,77 @@
 #include <string.h>
 #include "./../common/include//messages.h"
 #include "./../common/include/bd.h"
+#include "../common/include/util.h"
 #include <pthread.h>
 
 extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
+ 
 
 // Thread pour la réception des commandes
 // Client temporaire pour la démonstration
 void* receiveCommands(void* arg) {
-    char buffer[1024];
+    int commandNumber;
     char identifiant[ENTITY_ID_SIZE]; // Assurez-vous que ENTITY_ID_SIZE est défini correctement
-
+    char* commandList[] = {
+                "AJOUT_ELECTEUR",
+                "SUPPRIME_ELECTEUR",
+                "LIRE_ELECTEUR",
+                "MODIFIER_ELECTEUR",
+                "EST_PRESENT",
+                "CREER_ELECTION",
+                "MODIFIER_ELECTION",
+                "LIRE_ELECTION",
+                "SUPPRIMER_ELECTION",
+                "RESULTAT_ELECTION",
+                "VOTER",
+                "VALIDER_VOTE"
+            };
+    CommandType allCommands[] = {
+        AJOUT_ELECTEUR,
+        SUPPRIME_ELECTEUR,
+        LIRE_ELECTEUR,
+        MODIFIER_ELECTEUR,
+        EST_PRESENT,
+        CREER_ELECTION,
+        MODIFIER_ELECTEUR,
+        LIRE_ELECTION,
+        SUPPRIMER_ELECTION,
+        RESULTAT_ELECTION,
+        VOTER,
+        VALIDER_VOTE
+    };
     while (1) {
+        Commande *cmd = malloc(sizeof(Commande));
+        memset(cmd, 0, sizeof(Commande));
         printf("Entrez une commande: \n");
-        if (fgets(buffer, 1024, stdin) == NULL) {
+        for (int i = 0; i < COMMAND_NUMBER; i++){
+            notif(YELLOW, "%d: %s", i, commandList[i]);
+        }
+        notif(BLUE, "Test");
+        // Traitement succésif (Zero Nester) d'erreurs
+        if (scanf("%d", &commandNumber) != 1) {
             break;
         }
-
-        Commande *cmd = malloc(sizeof(Commande));
         if (!cmd) {
             fprintf(stderr, "Erreur d'allocation mémoire\n");
             continue;
         }
-        memset(cmd, 0, sizeof(Commande));
-
-        if (strncmp(buffer, "AJOUT", 5) == 0) {
-            printf("Entrez l'identifiant de l'électeur à ajouter: ");
-            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
-                cmd->type = AJOUT_ELECTEUR;
-                strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
-            }
-        } else if (strncmp(buffer, "SUPPRIME", 8) == 0) {
-            printf("Entrez l'identifiant de l'électeur à supprimer: ");
-            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
-                cmd->type = SUPPRIME_ELECTEUR;
-                strncpy(cmd->commande.supprimeElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
-            }
-        } else if (strncmp(buffer, "PRESENT", 7) == 0) {
-            printf("Entrez l'identifiant de l'électeur à vérifier: ");
-            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
-                cmd->type = EST_PRESENT;
-                strncpy(cmd->commande.estPresent.identifiant, identifiant, ENTITY_ID_SIZE-1);
-            }
-        } else {
-            printf("Commande non reconnue\n");
+        
+        if(commandNumber > COMMAND_NUMBER - 1){
+            notif(RED,"Commande non reconnue\n");
             free(cmd);
             continue;
         }
+        // Gestion des commandes 
+        cmd->type = allCommands[commandNumber];
+        notif(BLUE, "Entrez l'identifiant : ");
+        if(fgets(identifiant, ENTITY_ID_SIZE, stdin) == NULL){
+            err_n_die("Error reading input with fgets in main_Serveur");
+        }
+        strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
         enqueueCommand(cmd);
+        
     }
 
     return NULL;

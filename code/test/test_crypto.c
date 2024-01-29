@@ -1,4 +1,4 @@
-#include "../include/crypto.h"
+#include "../common/include/crypto.h"
 
 int main()
 {

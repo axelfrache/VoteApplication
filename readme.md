@@ -18,5 +18,11 @@ Notes personnelles :
 
 Pour lancer le test du prof : 
 
+Il faut d'abord "make" dans le dossier src pour compiler les fichiers .c
+
+Puis aller dans le dossier test et faire "make" pour compiler les fichiers .c
+
+Enfin, lancer le test avec la commande :
+
 ./test_electeur --file ../data_base/base_de_donnees.db
 

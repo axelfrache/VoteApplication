@@ -54,7 +54,7 @@ int database_init(sqlite3 *db)
 
     const char *requests[3] = {electeur_create, election_create, vote_create};
     int i;
-    for (i = 0; i < 3; i++) // TODO
+    for (i = 0; i < 3; i++)
     {
         const char *sql = requests[i];
         char *errMsg = 0;
@@ -280,7 +280,6 @@ int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
     return id;
 }
 
-// TODO
 void readElection(sqlite3 *db, int id)
 {
     sqlite3_stmt *stmt;
@@ -292,8 +291,15 @@ void readElection(sqlite3 *db, int id)
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            // Traiter les résultats ici
-            // Exemple : printf("%s\n", sqlite3_column_text(stmt, 2)); // Pour la colonne 'question'
+            // Supposons que id est la première colonne
+            int id = sqlite3_column_int(stmt, 0);
+            printf("Election: %d\n", id);
+            // Affiche la question de l'élection
+            const char *question = sqlite3_column_text(stmt, 2);
+            printf("Question: %s\n", question);
+            // Affiche le status de l'élection
+            const char *status = sqlite3_column_text(stmt, 5);
+            printf("Status: %s\n", status);
         }
 
         sqlite3_finalize(stmt);

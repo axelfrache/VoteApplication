@@ -132,7 +132,7 @@ void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
         return;
     }
     // Ouvrir la base de données
-    sqlite3 *db database_open("../data_base/base_de_donnees.db");
+    sqlite3 *db  = database_open("../data_base/base_de_donnees.db");
     // Appeler deleteElecteur
     deleteElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
 
@@ -174,29 +174,33 @@ void traitementCreerElection(CreerElectionCmd *cmd) {
 void traitementLireElection(LireElectionCmd *cmd) {
     printf("Traitement LireElectionCmd\n");
 
-    if(cmd == NULL || cmd->idElection < 1){
-        printf("Commande invalide ou ID d'élection manquant.\n");
+    if(cmd == NULL){
+        printf("Commande invalide.\n");
         return;
     }
 
     sqlite3 *db = database_open("../data_base/base_de_donnees.db");
-
-    readElection(db, cmd->idElection);
-
+    int id = Election_getIdFromIdentifiant(db, cmd->identifiant, sizeof(cmd->identifiant));
+    if(id == -1){
+        notif(RED, "L'election n'xiste pas");
+    }
+    readElection(db, id);
+    
     sqlite3_close(db);
 }
 
 void traitementModifierElection(ModifierElectionCmd *cmd) {
     printf("Traitement ModifierElectionCmd\n");
 
-    if(cmd == NULL || cmd->idElection < 1 || cmd->nouvelleQuestion[0] == '\0'){
-        printf("Commande invalide, ID d'élection manquant ou nouvelle question manquante.\n");
+    if(cmd == NULL || cmd->nouvelleQuestion[0] == '\0'){
+        printf("Commande invalide ou nouvelle question manquante.\n");
         return;
     }
 
     sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
-    updateElection(db, cmd->idElection, cmd->nouvelleQuestion);
+    int idElection = Election_getIdFromIdentifiant(db, cmd->identifiant, sizeof(cmd->identifiant));
+    updateElection(db, idElection, cmd->nouvelleQuestion);
 
     sqlite3_close(db);
 }
@@ -205,14 +209,15 @@ void traitementModifierElection(ModifierElectionCmd *cmd) {
 void traitementSupprimerElection(SupprimerElectionCmd *cmd) {
     printf("Traitement SupprimerElectionCmd\n");
 
-    if(cmd == NULL || cmd->idElection < 1){
-        printf("Commande invalide ou ID d'élection manquant.\n");
+    if(cmd == NULL){
+        printf("Commande invalide.\n");
         return;
     }
 
     sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
-    deleteElection(db, cmd->idElection);
+    int idElection = Election_getIdFromIdentifiant(db, cmd->identifiant, sizeof(cmd->identifiant));
+    deleteElection(db, idElection);
 
     sqlite3_close(db);
 }
@@ -224,7 +229,7 @@ void traitementSupprimerElection(SupprimerElectionCmd *cmd) {
 void traitementCreerVote(CreerVoteCmd *cmd) {
     printf("Traitement CreerVoteCmd\n");
 
-    if (cmd == NULL || cmd->idElection < 1 || cmd->idVotant < 1) {
+    if (cmd == NULL || cmd->idVotant < 1) {
         printf("Commande invalide ou données manquantes pour le vote.\n");
         return;
     }
@@ -245,7 +250,8 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
     }
 
     // Chiffrement et enregistrement du vote
-    Election_castVote(db, cmd->idVotant, cmd->idElection, cmd->ballot, n, g);
+    int idElection = Election_getIdFromIdentifiant(db, cmd->identifiantElection, sizeof(cmd->identifiantElection));
+    Election_castVote(db, cmd->idVotant, idElection, cmd->ballot, n, g);
 
     // Libération des ressources GMP et de la base de données
     mpz_clears(n, g, lambda, mu, NULL);
@@ -257,8 +263,8 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
 void traitementLireVote(LireVoteCmd *cmd) {
     printf("Traitement LireVoteCmd\n");
 
-    if (cmd == NULL || cmd->idElection < 1) {
-        printf("Commande invalide ou ID d'élection manquant.\n");
+    if (cmd == NULL ) {
+        printf("Commande invalide.\n");
         return;
     }
 
@@ -278,7 +284,8 @@ void traitementLireVote(LireVoteCmd *cmd) {
     }
 
     // Déchiffrement et traitement des votes
-    Election_processVotes(db, cmd->idElection, lambda, mu, n);
+    int idElection = Election_getIdFromIdentifiant(db, cmd->idElection, sizeof(cmd->idElection));
+    Election_processVotes(db, idElection, lambda, mu, n);
 
     // Libération des ressources GMP et de la base de données
     mpz_clears(lambda, mu, n, g, NULL);

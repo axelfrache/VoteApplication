@@ -75,7 +75,7 @@ void handleElectionCRUD(int choix) {
         case 1: // Créer Election
             cmd->type = CREER_ELECTION;
             printf("Entrez l'identifiant de l'élection à créer: ");
-            fgets(cmd->commande.creerElection.identifiant, ENTITY_ID_SIZE, stdin);
+            fgets(cmd->commande.creerElection.identifiant, sizeof(cmd->commande.creerElection.identifiant), stdin);
             printf("Entrez la question de l'élection: ");
             fgets(cmd->commande.creerElection.question, sizeof(cmd->commande.creerElection.question), stdin);
             printf("Entrez la date de début (YYYY-MM-DD): ");
@@ -87,23 +87,23 @@ void handleElectionCRUD(int choix) {
             break;
         case 2: // Lire Election
             cmd->type = LIRE_ELECTION;
-            printf("Entrez l'ID de l'élection à lire: ");
+            notif(GREEN,"Entrez l'ID de l'élection à lire: ");
             fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.lireElection.idElection = atoi(buffer);
+            strcpy(cmd->commande.lireElection.identifiant, buffer);
             break;
         case 3: // Modifier Election
             cmd->type = MODIFIER_ELECTION;
-            printf("Entrez l'ID de l'élection à modifier: ");
+            notif(GREEN,"Entrez l'ID de l'élection à modifier: ");
             fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.modifierElection.idElection = atoi(buffer);
-            printf("Entrez la nouvelle question de l'élection: ");
+            strcpy(cmd->commande.modifierElection.identifiant, buffer);
+            notif(GREEN, "Entrez la nouvelle question de l'élection: ");
             fgets(cmd->commande.modifierElection.nouvelleQuestion, sizeof(cmd->commande.modifierElection.nouvelleQuestion), stdin);
             break;
         case 4: // Supprimer Election
             cmd->type = SUPPRIMER_ELECTION;
-            printf("Entrez l'ID de l'élection à supprimer: ");
+            notif(GREEN,"Entrez l'ID de l'élection à supprimer: ");
             fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.supprimerElection.idElection = atoi(buffer);
+            strcpy(cmd->commande.supprimerElection.identifiant, buffer);
             break;
         case 5: // Retour au menu principal
             free(cmd);
@@ -129,27 +129,27 @@ void handleVoteCRUD(int choix) {
     switch (choix) {
         case 1: // Créer Vote
             cmd->type = CREER_VOTE;
-            printf("Entrez l'ID de l'électeur votant: ");
+            notif(GREEN, "Entrez l'identifiant de l'électeur votant: ");
             fgets(buffer, sizeof(buffer), stdin);
             cmd->commande.creerVote.idVotant = atoi(buffer);
-            printf("Entrez l'ID de l'élection pour le vote: ");
+            notif(GREEN, "Entrez l'identifiant de l'élection pour le vote: ");
             fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.creerVote.idElection = atoi(buffer);
+            strcpy(cmd->commande.creerVote.identifiantElection, buffer);
             // Ici, tu dois saisir et affecter les données du vote (cmd->commande.creerVote.ballot, etc.) selon ton implémentation
             enqueueCommand(cmd);
             break;
         case 2: // Lire les résultats des votes
             cmd->type = LIRE_VOTE;
-            printf("Entrez l'ID de l'élection pour voir les résultats: ");
+            notif(GREEN, "Entrez l'ID de l'élection pour voir les résultats: ");
             fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.lireVote.idElection = atoi(buffer);
+            strcpy(cmd->commande.lireVote.idElection, buffer);
             enqueueCommand(cmd);
             break;
         case 3: // Retour au menu principal
             free(cmd);
             return;
         default:
-            printf("Choix non valide.\n");
+            notif(RED, "Choix non valide.\n");
             free(cmd);
             return;
     }
@@ -161,11 +161,11 @@ void* receiveCommands(void* arg) {
     Commande *cmd;
 
     while (1) {
-        printf("\nMenu Principal:\n");
-        printf("1. Electeur\n");
-        printf("2. Election\n");
-        printf("3. Vote\n");
-        printf("4. Quitter\n");
+        notif(NONE, "\nMenu Principal:\n");
+        notif(YELLOW, "1. Electeur\n");
+        notif(YELLOW, "2. Election\n");
+        notif(YELLOW, "3. Vote\n");
+        notif(YELLOW, "4. Quitter\n");
         printf("Votre choix: ");
         fgets(buffer, sizeof(buffer), stdin);
         choixPrincipal = atoi(buffer);
@@ -173,12 +173,12 @@ void* receiveCommands(void* arg) {
         switch (choixPrincipal) {
             case 1: // Electeur
                 printf("\nElecteur - Choisissez une action:\n");
-                printf("1. Ajouter Electeur\n");
-                printf("2. Lire Electeur\n");
-                printf("3. Modifier Electeur\n");
-                printf("4. Supprimer Electeur\n");
-                printf("5. Retour au menu principal\n");
-                printf("Votre choix: ");
+                notif(YELLOW, "1. Ajouter Electeur\n");
+                notif(YELLOW, "2. Lire Electeur\n");
+                notif(YELLOW, "3. Modifier Electeur\n");
+                notif(YELLOW, "4. Supprimer Electeur\n");
+                notif(YELLOW, "5. Retour au menu principal\n");
+                notif(NONE, "Votre choix: ");
                 fgets(buffer, sizeof(buffer), stdin);
                 choixCRUD = atoi(buffer);
                 handleElecteurCRUD(choixCRUD);
@@ -186,22 +186,22 @@ void* receiveCommands(void* arg) {
 
             case 2: // Election
                 printf("\nElection - Choisissez une action:\n");
-                printf("1. Créer Election\n");
-                printf("2. Lire Election\n");
-                printf("3. Modifier Election\n");
-                printf("4. Supprimer Election\n");
-                printf("5. Retour au menu principal\n");
-                printf("Votre choix: ");
+                notif(YELLOW, "1. Créer Election\n");
+                notif(YELLOW, "2. Lire Election\n");
+                notif(YELLOW, "3. Modifier Election\n");
+                notif(YELLOW, "4. Supprimer Election\n");
+                notif(YELLOW, "5. Retour au menu principal\n");
+                notif(NONE, "Votre choix: ");
                 fgets(buffer, sizeof(buffer), stdin);
                 choixCRUD = atoi(buffer);
                 handleElectionCRUD(choixCRUD);
                 break;
 
             case 3: // Vote
-                printf("\nVote - Choisissez une action:\n");
-                printf("1. Créer Vote\n");
-                printf("2. Lire les résultats des votes\n");
-                printf("3. Retour au menu principal\n");
+                notif(NONE, "\nVote - Choisissez une action:\n");
+                notif(YELLOW, "1. Créer Vote\n");
+                notif(YELLOW, "2. Lire les résultats des votes\n");
+                notif(YELLOW,"3. Retour au menu principal\n");
                 printf("Votre choix: ");
                 fgets(buffer, sizeof(buffer), stdin);
                 choixCRUD = atoi(buffer);

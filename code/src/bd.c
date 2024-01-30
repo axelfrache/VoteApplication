@@ -259,7 +259,7 @@ void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char
     }
 }
 
-int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
+int Election_getIdFromIdentifiant(sqlite3 *db, const char *identifiant, int size)
 {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT id FROM Election WHERE identifiant = ?;";
@@ -267,7 +267,7 @@ int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
-        sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
+        sqlite3_bind_blob(stmt, 1, identifiant, size, SQLITE_STATIC);
 
         if (sqlite3_step(stmt) == SQLITE_ROW)
         {

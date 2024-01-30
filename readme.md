@@ -68,6 +68,9 @@ cd ../build
 ## Logique de programmation
 
 
+## Logique des tests
+
+Concernant les tests nous avons mis en place une stratégie de tests
 
 ## Cryptographie des votes
 

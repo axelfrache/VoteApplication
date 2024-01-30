@@ -4,6 +4,12 @@
 
 Ce projet simule un système de vote électronique. Il est conçu autour du modèle producteur/consommateur, utilisant des threads pour gérer les commandes dans une file d'attente. Les commandes sont déposées dans un tableau circulaire partagé et traitées par des threads consommateurs.
 
+Ce projet a été réalisé par :
+
+- **FRACHE Axel**
+- **GONFIANTINI Gaëtan**
+- **JIMENEZ Alfonso**
+
 ## Rappel des besoins
 
 Le projet vise à élaborer un système de vote électronique garantissant l'authenticité et la justesse des votes, avec un décompte complet et transparent des résultats, tout en assurant l'accessibilité à tous les électeurs éligibles. Les fonctionnalités essentielles comprennent une gestion solide des électeurs et des élections, avec des opérations CRUD pour les deux, ainsi qu'un système de vote sécurisé et un comptage fiable des résultats. Le système met un accent particulier sur la validation des données, les mesures de sécurité pour prévenir les actions non autorisées, et les mécanismes pour vérifier l'éligibilité des électeurs et l'intégrité des votes.
@@ -16,6 +22,25 @@ Pour résumer les besoins du projet de système de vote dans votre README, vous 
 - **Accessibilité** : Permettre à tous les électeurs éligibles de participer facilement au vote.
 - **Sécurité** : Mettre en place des mesures de sécurité robustes pour prévenir les actions non autorisées et protéger les données.
 - **Vérification** : Disposer de mécanismes pour vérifier l'éligibilité des électeurs et l'intégrité des votes.
+
+## Structure du projet
+
+La structure du projet est organisée en plusieurs dossiers clés pour une séparation claire des composants et une meilleure maintenabilité :
+
+- **build/** : Contient les exécutables et les binaires, y compris les tests unitaires, générés à partir du code source.
+
+- **common/include/** : Regroupe les en-têtes communs, incluant les définitions pour la base de données et les fonctions de cryptographie, facilitant la réutilisation du code.
+
+- **data_base/** : Héberge la base de données SQLite, centralisant les données des électeurs, élections et votes.
+
+- **src/** : Contient les fichiers sources du projet, avec le code principal et le Makefile pour la compilation.
+
+- **test/** : Dédie un espace aux tests unitaires, permettant de valider la fiabilité des différentes composantes du système.
+
+
+Voici en image la structure complète du projet :
+
+![imageStructureDuProjet.png](imgREADME%2FimageStructureDuProjet.png)
 
 ## Logique de programmation
 
@@ -40,7 +65,13 @@ Cette architecture permet au système de vote de gérer efficacement un grand no
 
 ## Logique des tests
 
-Concernant les tests nous avons mis en place une stratégie de tests
+Concernant les tests nous avons mis en place une stratégie de tests.
+
+Nous avons 3 types de tests répartis dans 3 dossier différents :
+
+- **Tests des fonctions de bd.c** : Ces tests ont étaient fournis par le professeur et permettent de tester les fonctions de la base de données.
+- **Tests des fonctions de traitement des commandes** : Ces tests permettent de tester les fonctions de traitement des commandes, notamment les CRUD des électeurs, élections et votes.
+- **Tests de libraire** : Ces tests permettent de tester les fonctions de la librairie, notamment les librairies de cryptographie et de base de données.
 
 ## Cryptographie des votes
 

@@ -16,7 +16,6 @@ typedef enum {
     SUPPRIMER_ELECTION,
     CREER_VOTE,
     LIRE_VOTE,
-    // Ajouter plus de types de commandes selon les besoins
 } CommandType;
 
 // Structure de commande pour ajouter un électeur

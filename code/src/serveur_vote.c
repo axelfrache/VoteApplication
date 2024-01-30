@@ -350,7 +350,6 @@ void* processCommands(void* arg) {
             case LIRE_VOTE:
                 traitementLireVote(&cmd->commande.lireVote);
                 break;
-                // Ajouter d'autres cas si nécessaire
             default:
                 printf("Type de commande non reconnu: %d\n", cmd->type);
                 break;

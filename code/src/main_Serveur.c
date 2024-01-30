@@ -10,7 +10,6 @@ extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
 
 
-
 void handleElecteurCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
     char identifiant[ENTITY_ID_SIZE];

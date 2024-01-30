@@ -3,6 +3,7 @@
 #include <string.h>
 #include "./../common/include//messages.h"
 #include "./../common/include/bd.h"
+
 #include <pthread.h>
 
 extern void enqueueCommand(Commande*);

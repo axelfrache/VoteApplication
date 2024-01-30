@@ -5,6 +5,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "../common/include/crypto.h"
+
 
 const char *electeur_create = "CREATE TABLE IF NOT EXISTS Electeur(id INTEGER PRIMARY KEY, numeroID BLOB);";
 

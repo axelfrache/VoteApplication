@@ -73,7 +73,7 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
     }
 
     // Avant d'insérer un électeur, vérifiez s'il existe déjà
-    if (electeurExiste(db, cmd->identifiant)) {
+    if (electeurExists(db, cmd->identifiant,ENTITY_ID_SIZE) != 0 ) {
         printf("L'électeur avec l'identifiant %s existe déjà.\n", cmd->identifiant);
     } else {
         createElecteur(db, cmd->identifiant, strlen(cmd->identifiant)); // Utilise strlen pour la taille si c'est une chaîne de caractères
@@ -147,27 +147,7 @@ void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
     // Fermer la base de données
     sqlite3_close(db);
 }
-/**
- * Cette fonction vérifie si un électeur existe dans la base de données.
- * @param db
- * @param numeroID
- * @return
- */
-int electeurExiste(sqlite3 *db, const char *numeroID) {
-    sqlite3_stmt *stmt;
-    const char *sql = "SELECT COUNT(*) FROM Electeur WHERE numeroID = ?;";
-    int count = 0;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
-        sqlite3_bind_text(stmt, 1, numeroID, -1, SQLITE_STATIC);
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
-            count = sqlite3_column_int(stmt, 0);
-        }
-        sqlite3_finalize(stmt);
-    }
-
-    return count > 0;
-}
 
 
 /**
@@ -181,15 +161,27 @@ void traitementCreerElection(CreerElectionCmd *cmd) {
         return;
     }
 
+    // Nettoyer la valeur du status pour enlever les espaces et les caractères de nouvelle ligne
+    char statusClean[256];
+    sscanf(cmd->status, "%255s", statusClean);  // Utilise sscanf pour lire une chaîne sans espaces
+
+    // Vérification du statut
+    if (strcmp(statusClean, "active") != 0 && strcmp(statusClean, "closed") != 0 && strcmp(statusClean, "canceled") != 0) {
+        printf("Statut non valide. Les valeurs autorisées sont 'active', 'closed', 'canceled'.\n");
+        return;
+    }
+
     sqlite3 *db;
     if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur d'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
         return;
     }
 
-    createElection(db, cmd->identifiant, ENTITY_ID_SIZE, cmd->question, cmd->dateDebut, cmd->dateFin, cmd->status);
+    createElection(db, cmd->identifiant, ENTITY_ID_SIZE, cmd->question, cmd->dateDebut, cmd->dateFin, statusClean);
     sqlite3_close(db);
 }
+
+
 
 void traitementLireElection(LireElectionCmd *cmd) {
     printf("Traitement LireElectionCmd\n");
@@ -261,19 +253,30 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
         return;
     }
 
+    // Initialisation des variables GMP pour la cryptographie
+    mpz_t n, g, lambda, mu;
+    mpz_inits(n, g, lambda, mu, NULL);
+
+    // Générer les clés publiques et privées (n, g, lambda, mu)
+    generate_keys(n, lambda, g, mu);  // Utilise la fonction fournie pour générer les clés
+
     // Ouvre la base de données
     sqlite3 *db;
     if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+        mpz_clears(n, g, lambda, mu, NULL);  // Libérer les ressources GMP
         return;
     }
 
-    // Ici, utilise les membres corrects de cmd pour la fonction Election_castVote
-    Election_castVote(db, cmd->idVotant, cmd->idElection, cmd->ballot, sizeof(cmd->ballot), cmd->hashValidation);
+    // Chiffrement et enregistrement du vote
+    Election_castVote(db, cmd->idVotant, cmd->idElection, cmd->ballot, n, g);
 
-    // Ferme la base de données
+    // Libération des ressources GMP et de la base de données
+    mpz_clears(n, g, lambda, mu, NULL);
     sqlite3_close(db);
 }
+
+
 
 void traitementLireVote(LireVoteCmd *cmd) {
     printf("Traitement LireVoteCmd\n");
@@ -283,22 +286,30 @@ void traitementLireVote(LireVoteCmd *cmd) {
         return;
     }
 
+    // Initialisation des variables GMP pour la cryptographie
+    mpz_t lambda, mu, n, g;
+    mpz_inits(lambda, mu, n, g, NULL);
+
+    // Générer les clés publiques et privées (n, g, lambda, mu)
+    generate_keys(n, lambda, g, mu);  // Utilise la même fonction pour générer toutes les clés
+
     // Ouvre la base de données
     sqlite3 *db;
     if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+        mpz_clears(lambda, mu, n, g, NULL);  // Libérer les ressources GMP
         return;
     }
 
-    // Traite les résultats des votes
-    int option0 = 0, option1 = 0, totalVotes = 0;
-    Election_processVotes(db, cmd->idElection, &option0, &option1, &totalVotes);
+    // Déchiffrement et traitement des votes
+    Election_processVotes(db, cmd->idElection, lambda, mu, n);
 
-    printf("Total votes: %d\nOption 0: %d\nOption 1: %d\n", totalVotes, option0, option1);
-
-    // Ferme la base de données
+    // Libération des ressources GMP et de la base de données
+    mpz_clears(lambda, mu, n, g, NULL);
     sqlite3_close(db);
 }
+
+
 
 // Thread pour le traitement des commandes
 void* processCommands(void* arg) {

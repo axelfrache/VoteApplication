@@ -75,13 +75,17 @@ Nous avons 3 types de tests répartis dans 3 dossier différents :
 
 ## Cryptographie des votes
 
-La sécurité des votes est assurée par cryptographie, utilisant la bibliothèque GMP. Les fonctions clés sont **Election_castVote** pour le chiffrement des votes et **Election_processVotes** pour le déchiffrement et le comptage.
-Ces fonctions se trouvent dans le fichier "bd.c" et permettent de chiffrer les votes lorsqu'on en ajoute un et de déchiffrer les votes lorsqu'on veut consulter les résultats d'un vote.
+La cryptographie joue un rôle crucial dans la sécurité des votes, grâce à l'utilisation de la bibliothèque GMP. Deux fonctions essentielles sont mises en œuvre : 
 
-Notre stratégie est de chiffré les votes lors de l'ajout d'un vote et de les déchiffrer lors de la consultation des résultats d'un vote.
+**Election_castVote** pour chiffrer les votes au moment de leur soumission, et **Election_processVotes** pour déchiffrer et comptabiliser les votes lors de l'affichage des résultats. 
 
-Je sais que vous pourrez faire la remarque dans le future que si il y a un client/server, le trajet des votes se feront en clair donc nous pensons par la suite mettre en place des communications sécurisées entre le client et le serveur pour palier ce problème.
-Le but de notre stratégie est que si un attaquant arrive à rentrer dans le serveur, il ne pourra pas voir les votes en clair.
+Ces mécanismes sont intégrés dans le fichier **bd.c**. L'objectif est de s'assurer que, même en cas d'intrusion dans le serveur, les votes demeurent indéchiffrables. 
+
+Nous envisageons également de sécuriser les transmissions de votes pour prévenir les interceptions lors des communications client-serveur.
+
+Le choix d'avoir mis la cryptographie directement côté serveur se justifie pas le fait de maintenant l'intégrité des votes et de ne pas laisser le client générer des clés de chiffrement qu'il pourrait utiliser pour modifier les votes.
+
+De plus si dans le future nous mettons en place des communications clients-serveur avec TLS, les communications seront déjà sécurisées.
 
 ## Patron de Conception
 
@@ -198,5 +202,11 @@ cd ../build
 Voici la liste de toutles tests disponibles :
 
 ![imageListeTestDisponible.png](imgREADME%2FimageListeTestDisponible.png)
+
+## Notes importantes
+
+- Les tests qui avaient été fournis par le professeur ont été modifiés pour être en accord avec notre code.
+- Nous avons enlevé la responsabilité de spécifié la base de données lorsque l'on lance l'executable afin de donner le moins de responsabilité à l'utilisateur.
+- Notre choix de cryptographie est de chiffrer les votes lors de l'ajout d'un vote et de les déchiffrer lors de la consultation des résultats d'un vote a été réfléchie.
 
 

@@ -64,18 +64,22 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
         printf("Commande invalide ou identifiant manquant.\n");
         return;
     }
-    // Ouvrir la base de données
+
+    // Ouvrir la base de données (assurez-vous que le chemin est correct)
     sqlite3 *db;
     if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
         return;
     }
-    // Appeler createElecteur
-    createElecteur(db, cmd->identifiant, ENTITY_ID_SIZE); // ENTITY_ID_SIZE est la taille de l'identifiant.
 
+    // Avant d'insérer un électeur, vérifiez s'il existe déjà
+    if (electeurExiste(db, cmd->identifiant)) {
+        printf("L'électeur avec l'identifiant %s existe déjà.\n", cmd->identifiant);
+    } else {
+        createElecteur(db, cmd->identifiant, strlen(cmd->identifiant)); // Utilise strlen pour la taille si c'est une chaîne de caractères
+    }
     // Fermer la base de données
     sqlite3_close(db);
-
 }
 
 void traitementLireElecteur(LireElecteurCmd *cmd) {
@@ -143,6 +147,28 @@ void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
     // Fermer la base de données
     sqlite3_close(db);
 }
+/**
+ * Cette fonction vérifie si un électeur existe dans la base de données.
+ * @param db
+ * @param numeroID
+ * @return
+ */
+int electeurExiste(sqlite3 *db, const char *numeroID) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT COUNT(*) FROM Electeur WHERE numeroID = ?;";
+    int count = 0;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, numeroID, -1, SQLITE_STATIC);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            count = sqlite3_column_int(stmt, 0);
+        }
+        sqlite3_finalize(stmt);
+    }
+
+    return count > 0;
+}
+
 
 /**
  * CRUD Election
@@ -273,10 +299,6 @@ void traitementLireVote(LireVoteCmd *cmd) {
     // Ferme la base de données
     sqlite3_close(db);
 }
-
-
-
-
 
 // Thread pour le traitement des commandes
 void* processCommands(void* arg) {

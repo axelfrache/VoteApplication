@@ -357,74 +357,80 @@ void deleteElection(sqlite3 *db, int id)
 
 // usecases election
 
-void Election_castVote(sqlite3 *db, int idVotant, int idElection, const void *ballot, int ballotSize, const char *hashValidation)
-{
+void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *choix, mpz_t n, mpz_t g) {
     sqlite3_stmt *stmt;
-    const char *sql = "INSERT INTO Vote (idVotant, idElection, timestamp, ballot, hashValidation) VALUES (?, ?, datetime('now'), ?, ?);";
+    const char *sql = "INSERT INTO Vote (idVotant, idElection, timestamp, ballot) VALUES (?, ?, datetime('now'), ?);";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    // Convertir le choix en un grand nombre
+    mpz_t m, c;
+    mpz_inits(m, c, NULL);
+    mpz_set_ui(m, (unsigned long int)choix[0]);  // Assumer que le choix est une simple valeur pour la démonstration
+
+    // Chiffrer le choix
+    encrypt(c, m, n, g);
+
+    // Convertir le texte chiffré en chaîne pour le stockage
+    char *c_str = mpz_get_str(NULL, 10, c);
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_int(stmt, 1, idVotant);
         sqlite3_bind_int(stmt, 2, idElection);
-        sqlite3_bind_blob(stmt, 3, ballot, ballotSize, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 4, hashValidation, -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 3, c_str, -1, SQLITE_TRANSIENT);  // SQLITE_TRANSIENT pour que SQLite fasse une copie
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             fprintf(stderr, "Erreur lors de l'insertion: %s\n", sqlite3_errmsg(db));
-        }
-        else
-        {
+        } else {
             printf("Vote ajouté avec succès\n");
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
+
+    // Libérer la mémoire
+    mpz_clears(m, c, NULL);
+    free(c_str);
 }
 
-//
-void Election_processVotes(sqlite3 *db, int electionId, int *p_option0, int *p_option1, int *p_totalvotes)
-{
+
+
+void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, mpz_t n) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT * FROM Vote WHERE idElection = ?;";
-    *p_totalvotes = 0;
-    *p_option0 = 0;
-    *p_option1 = 0;
+    int totalVotes = 0, option0 = 0, option1 = 0;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_int(stmt, 1, electionId);
 
-        while (sqlite3_step(stmt) == SQLITE_ROW)
-        {
-            // Récupérer les données de chaque vote
-            int voteId = sqlite3_column_int(stmt, 0); // id
-            // Autres colonnes peuvent être récupérées ici
-            const void *ballotBlob = sqlite3_column_blob(stmt, 4);
-            int blobSize = sqlite3_column_bytes(stmt, 4);
-            // Traiter les données du vote
-            // printf("Traitement du vote ID: %d\n", voteId);
-            // Ajoutez ici le code pour traiter chaque vote
-            *p_totalvotes = *p_totalvotes + 1;
-            int v = *((char *)ballotBlob);
-            if (v)
-            {
-                *p_option1 = *p_option1 + 1;
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            const char *c_str = (const char *)sqlite3_column_text(stmt, 4); // ballot
+            mpz_t c, m;
+            mpz_inits(c, m, NULL);
+
+            // Convertir la chaîne chiffrée en grand nombre
+            mpz_set_str(c, c_str, 10);
+
+            // Déchiffrer le vote
+            decrypt(m, c, lambda, mu, n);
+
+            // Traiter le vote déchiffré
+            totalVotes++;
+            if (mpz_cmp_ui(m, 'O') == 0) {  // Assumer 'O' pour oui
+                option1++;
+            } else {
+                option0++;
             }
-            else
-            {
-                *p_option0 = *p_option0 + 1;
-            }
+
+            // Libérer la mémoire
+            mpz_clears(c, m, NULL);
         }
 
+        printf("Total votes: %d\nOption 0: %d\nOption 1: %d\n", totalVotes, option0, option1);
+
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
+

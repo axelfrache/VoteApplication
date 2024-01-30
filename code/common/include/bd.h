@@ -23,7 +23,7 @@ void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char
 void deleteElection(sqlite3 *db, int id);
 void updateElection(sqlite3 *db, int id, const char *question);
 void readElection(sqlite3 *db, int id);
-int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
+int Election_getIdFromIdentifiant(sqlite3 *db, const char *identifiant, int size);
 
 // bd.h
 void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *choix, mpz_t n, mpz_t g);

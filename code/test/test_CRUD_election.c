@@ -1,4 +1,6 @@
 #include "../common/include/votechain.h"
+#include "../src/serveur_vote.c"
+#include "../common/include/messages.h"
 
 #include <glib.h>
 #include <stdio.h>
@@ -44,21 +46,65 @@ int main(int argc, char *argv[])
         g_print("Chemin du fichier: %s\n", file_path);
         int needInit = database_exists(file_path);
         struct stat buffer;
-        g_assert(needInit == -1);
+        g_print("File %s exists ? %d", file_path, (stat(file_path, &buffer)));
+
+        g_print("needInit: %d\n", needInit);
         sqlite3 *db = database_open(file_path);
         g_assert_nonnull(db);
+        // Creation de la BD s'il n'existe pas
         if (needInit == -1)
         {
             g_print("initilisation de la base de données");
             database_init(db);
         }
 
-        // creation d une election
-        char id[ID_SIZE] = "EXXXXXXXXX";
-        const char *question = "This is a binary question";
-        createElection(db, id, ID_SIZE, question, "01/01/2023", "02/01/2023", "active");
-        int localid = getIdFromIdentifiant(db, id, ID_SIZE);
-        g_assert(localid == 1);
+        // creation d'une election
+        CreerElectionCmd *cmd1;
+
+        int id[ID_SIZE];
+
+        cmd1->identifiant = "XXXXXXXXX1";
+        cmd1->question = "Ce test va t'il passer ?";
+        cmd1->dateDebut = "2024-01-30";
+        cmd1->dateFin = "2024-01-31";
+        cmd1->status = "active";
+
+        traitementCreerElection(cmd1);
+
+        int localid = getIdFromNumeroID(db, id, ID_SIZE);
+        g_print("Numero ID when returned : %d", localid);
+
+        // createElecteur(db, id2, 10);
+
+        //read election
+        LireElectionCmd *electionCmd;
+        electionCmd->idElection = id;
+        traitementLireElection(electionCmd);
+
+        int readId = getIdFromNumeroID(db, id, ID_SIZE);
+        g_print("readId = %d\n", readId);
+
+        g_assert(electeurExists(db, id, ID_SIZE) == 1);
+        
+
+        // Update election
+        updateElecteur(db, id, 10, id2, ID_SIZE);
+        int r = electeurExists(db, id, ID_SIZE);
+        g_print("r = %d", r);
+        g_assert(r == 0);
+        g_assert(electeurExists(db, id2, ID_SIZE) == 1);
+        
+        // Delete Election
+        deleteElecteur(db, id2, ID_SIZE);
+        g_assert(electeurExists(db, id2, ID_SIZE) == 0);
+    
+        
+
+
+        
+
+
+        
     }
     else
     {

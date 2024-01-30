@@ -75,6 +75,21 @@ int database_init(sqlite3 *db)
     return 0;
 };
 
+// Supprime toutes les tables de la base de données
+int clear_database(sqlite3 *db) {
+    char *errMsg = 0;
+    const char *sql = "DROP TABLE IF EXISTS Electeur; DROP TABLE IF EXISTS Election; DROP TABLE IF EXISTS Vote;";
+
+    int rc = sqlite3_exec(db, sql, 0, 0, &errMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Erreur lors de la suppression des tables: %s\n", errMsg);
+        sqlite3_free(errMsg);
+        return 1;
+    }
+
+    return 0;
+}
+
 void createElecteur(sqlite3 *db, const char *numeroID, int size)
 {
     sqlite3_stmt *stmt;
@@ -116,7 +131,9 @@ void readElecteur(sqlite3 *db, const char *numeroID, int size)
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
             const char *id = sqlite3_column_blob(stmt, 0);
+            const char *numeroID = sqlite3_column_blob(stmt, 1);
             printf("Electeur: %s\n", id);
+            printf("NumeroID: %s\n", numeroID);
         }
 
         sqlite3_finalize(stmt);

@@ -48,7 +48,7 @@ Commande* dequeueCommand() {
     Commande *cmd = commandQueue[queueStart];
     queueStart = (queueStart + 1) % MAX_COMMANDS;
 
-    notif(GREEN, "Commande récupérée du buffer.");
+    notif(GREEN, "Commande récupérée du buffer.\n");
     pthread_cond_signal(&condQueueNotFull);
     pthread_mutex_unlock(&mutexQueue);
 
@@ -96,10 +96,18 @@ void traitementLireElecteur(LireElecteurCmd *cmd) {
         return;
     }
 
-    readElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
+    // Vérifie si l'électeur existe dans la base de données
+    if (electeurExists(db, cmd->identifiant, ENTITY_ID_SIZE)) {
+        // Si l'électeur existe, procède à la lecture de ses informations
+        readElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
+    } else {
+        // Si l'électeur n'existe pas, affiche un message d'erreur
+        printf("L'électeur avec l'identifiant spécifié n'existe pas dans la base de données.\n");
+    }
 
     sqlite3_close(db);
 }
+
 
 
 void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
@@ -148,8 +156,6 @@ void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
     sqlite3_close(db);
 }
 
-
-
 /**
  * CRUD Election
  */
@@ -160,17 +166,14 @@ void traitementCreerElection(CreerElectionCmd *cmd) {
         printf("Commande invalide.\n");
         return;
     }
-
     // Nettoyer la valeur du status pour enlever les espaces et les caractères de nouvelle ligne
     char statusClean[256];
     sscanf(cmd->status, "%255s", statusClean);  // Utilise sscanf pour lire une chaîne sans espaces
-
     // Vérification du statut
     if (strcmp(statusClean, "active") != 0 && strcmp(statusClean, "closed") != 0 && strcmp(statusClean, "canceled") != 0) {
         printf("Statut non valide. Les valeurs autorisées sont 'active', 'closed', 'canceled'.\n");
         return;
     }
-
     sqlite3 *db;
     if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur d'ouverture de la base de données: %s\n", sqlite3_errmsg(db));

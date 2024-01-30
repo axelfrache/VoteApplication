@@ -8,6 +8,7 @@ sqlite3 *database_open(const char *path);
 int database_close(sqlite3 *db);
 int database_init(sqlite3 *db);
 int database_exists(const char *path);
+int clear_database(sqlite3 *db);
 
 // usecases electeur
 void createElecteur(sqlite3 *db, const char *numeroID, int size);

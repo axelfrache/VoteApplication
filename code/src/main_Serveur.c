@@ -232,7 +232,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Initialiser la base de données en créant les tables nécessaires
+    // Vider la base de données
+    if (clear_database(db) != 0) {
+        fprintf(stderr, "Erreur lors du vidage de la base de données.\n");
+        sqlite3_close(db);
+        return 1;
+    }
+
+    // Initialiser la base de données en recréant les tables nécessaires
     if (database_init(db) != 0) {
         fprintf(stderr, "Erreur lors de l'initialisation de la base de données.\n");
         sqlite3_close(db);

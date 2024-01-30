@@ -1,97 +1,105 @@
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef MESSAGES_H
+#define MESSAGES_H
 
-#include "protocol.h"
+#define ENTITY_ID_SIZE 256
 
+// Enumération pour identifier le type de commande
+typedef enum {
+    AJOUT_ELECTEUR,
+    LIRE_ELECTEUR,
+    MODIFIER_ELECTEUR,
+    SUPPRIME_ELECTEUR,
+    EST_PRESENT,
+    CREER_ELECTION,
+    LIRE_ELECTION,
+    MODIFIER_ELECTION,
+    SUPPRIMER_ELECTION,
+    CREER_VOTE,
+    LIRE_VOTE,
+} CommandType;
+
+// Structure de commande pour ajouter un électeur
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
-typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
-} SupprimeElecteurCmd;
+
+// Structure de commande pour lire un électeur
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } LireElecteurCmd;
+
+// Structure de commande pour modifier un électeur
+typedef struct {
+    char ancienIdentifiant[ENTITY_ID_SIZE];
+    char nouvelIdentifiant[ENTITY_ID_SIZE];
+} ModifierElecteurCmd;
+
+// Structure de commande pour supprimer un électeur
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
-} ModifierElecteurCmd;
+} SupprimeElecteurCmd;
+
+// Structure de commande pour vérifier la présence d'un électeur
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } EstPresentCmd;
+
+// Structure de commande pour créer une élection
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
+    char question[256];
+    char dateDebut[20];
+    char dateFin[20];
+    char status[10]; // Peut être 'active', 'closed', 'canceled'
 } CreerElectionCmd;
+
+// Structure de commande pour lire les détails d'une élection
 typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
-} ModifierElectionCmd;
-typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
+    int idElection;
 } LireElectionCmd;
+
+// Structure de commande pour modifier une élection
 typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
+    int idElection;
+    char nouvelleQuestion[256];
+} ModifierElectionCmd;
+
+// Structure de commande pour supprimer une élection
+typedef struct {
+    int idElection;
 } SupprimerElectionCmd;
+
+// Structure de commande pour créer un vote
 typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
-} ResultatElectionCmd;
+    int idElection;
+    int idVotant;
+    char ballot[256];
+    char hashValidation[256];
+} CreerVoteCmd;
+
+
+// Structure de commande pour lire un vote
 typedef struct {
-    char identifiantVotant[ENTITY_ID_SIZE];
-    char identifiantElection[ENTITY_ID_SIZE];
-    char bulletin[ENTITY_ID_SIZE];
-} VoterCmd;
-typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
-} ValiderVoteCmd;
+    int idElection;
+} LireVoteCmd;
 
-typedef enum {
-    NOP = 0,
-    /* Commandes pour les électeurs */
-
-    AJOUT_ELECTEUR, // Commande pour ajouter un électeur
-    SUPPRIME_ELECTEUR, // Commande pour supprimer un électeur
-    LIRE_ELECTEUR, //Commande pour lire les informations d'un électeur
-    MODIFIER_ELECTEUR, //Commande pour modifier un électeur
-
-    EST_PRESENT, //Commande qui vérifie si un électeur est présent dans la liste des électeurs
-
-    /* Commandes pour les élections */
-
-    CREER_ELECTION,
-    MODIFIER_ELECTION,
-    LIRE_ELECTION,
-    SUPPRIMER_ELECTION,
-
-    RESULTAT_ELECTION,
-
-    /* Commandes pour la gestion des votes */
-    VOTER,
-    VALIDER_VOTE
-} CommandType;
-
-//--
+// Structure générale pour une commande
 typedef struct {
     CommandType type;
-    char signature[256]; // la signature de la commande
     union {
-        //Electeur
         AjoutElecteurCmd ajoutElecteur;
-        ModifierElectionCmd modifierElection;
         LireElecteurCmd lireElecteur;
+        ModifierElecteurCmd modifierElecteur;
         SupprimeElecteurCmd supprimeElecteur;
-
         EstPresentCmd estPresent;
-
-        //Election
         CreerElectionCmd creerElection;
-        ModifierElectionCmd modifierElecteur;
         LireElectionCmd lireElection;
-        ModifierElecteurCmd modifierElecteurCmd;
+        ModifierElectionCmd modifierElection;
         SupprimerElectionCmd supprimerElection;
-        ResultatElectionCmd relutatElection;
-        // Vote
-        VoterCmd voter;
-        ValiderVoteCmd validerVote;
-
+        CreerVoteCmd creerVote;
+        LireVoteCmd lireVote;
+        // Ajouter plus de commandes selon les besoins
     } commande;
 } Commande;
 
-#endif
+#endif // MESSAGES_H

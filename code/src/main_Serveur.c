@@ -3,57 +3,218 @@
 #include <string.h>
 #include "./../common/include//messages.h"
 #include "./../common/include/bd.h"
+
 #include <pthread.h>
 
 extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
 
-// Thread pour la réception des commandes
-// Client temporaire pour la démonstration
-void* receiveCommands(void* arg) {
+
+void handleElecteurCRUD(int choix) {
+    Commande *cmd = malloc(sizeof(Commande));
+    char identifiant[ENTITY_ID_SIZE];
+
+    if (!cmd) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        return;
+    }
+    memset(cmd, 0, sizeof(Commande));
+
+    switch (choix) {
+        case 1: // Ajouter Electeur
+            cmd->type = AJOUT_ELECTEUR;
+            printf("Entrez l'identifiant de l'électeur à ajouter: ");
+            fgets(identifiant, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            break;
+        case 2: // Lire Electeur
+            cmd->type = LIRE_ELECTEUR;
+            printf("Entrez l'identifiant de l'électeur à lire: ");
+            fgets(identifiant, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.lireElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            break;
+        case 3: // Modifier Electeur
+            cmd->type = MODIFIER_ELECTEUR;
+            printf("Entrez l'ancien identifiant de l'électeur à modifier: ");
+            fgets(identifiant, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.modifierElecteur.ancienIdentifiant, identifiant, ENTITY_ID_SIZE-1);
+            printf("Entrez le nouvel identifiant de l'électeur: ");
+            fgets(identifiant, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.modifierElecteur.nouvelIdentifiant, identifiant, ENTITY_ID_SIZE-1);
+         break;
+        case 4: // Supprimer Electeur
+            cmd->type = SUPPRIME_ELECTEUR;
+            printf("Entrez l'identifiant de l'électeur à supprimer: ");
+            fgets(identifiant, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.supprimeElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            break;
+        case 5: // Retour au menu principal
+            free(cmd);
+            return;
+        default:
+            printf("Choix non valide.\n");
+            free(cmd);
+            return;
+    }
+    enqueueCommand(cmd);
+}
+
+void handleElectionCRUD(int choix) {
+    Commande *cmd = malloc(sizeof(Commande));
     char buffer[1024];
-    char identifiant[ENTITY_ID_SIZE]; // Assurez-vous que ENTITY_ID_SIZE est défini correctement
+
+    if (!cmd) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        return;
+    }
+    memset(cmd, 0, sizeof(Commande));
+
+    switch (choix) {
+        case 1: // Créer Election
+            cmd->type = CREER_ELECTION;
+            printf("Entrez l'identifiant de l'élection à créer: ");
+            fgets(cmd->commande.creerElection.identifiant, ENTITY_ID_SIZE, stdin);
+            printf("Entrez la question de l'élection: ");
+            fgets(cmd->commande.creerElection.question, sizeof(cmd->commande.creerElection.question), stdin);
+            printf("Entrez la date de début (YYYY-MM-DD): ");
+            fgets(cmd->commande.creerElection.dateDebut, sizeof(cmd->commande.creerElection.dateDebut), stdin);
+            printf("Entrez la date de fin (YYYY-MM-DD): ");
+            fgets(cmd->commande.creerElection.dateFin, sizeof(cmd->commande.creerElection.dateFin), stdin);
+            printf("Entrez le statut de l'élection (active/closed/canceled): ");
+            fgets(cmd->commande.creerElection.status, sizeof(cmd->commande.creerElection.status), stdin);
+            break;
+        case 2: // Lire Election
+            cmd->type = LIRE_ELECTION;
+            printf("Entrez l'ID de l'élection à lire: ");
+            fgets(buffer, sizeof(buffer), stdin);
+            cmd->commande.lireElection.idElection = atoi(buffer);
+            break;
+        case 3: // Modifier Election
+            cmd->type = MODIFIER_ELECTION;
+            printf("Entrez l'ID de l'élection à modifier: ");
+            fgets(buffer, sizeof(buffer), stdin);
+            cmd->commande.modifierElection.idElection = atoi(buffer);
+            printf("Entrez la nouvelle question de l'élection: ");
+            fgets(cmd->commande.modifierElection.nouvelleQuestion, sizeof(cmd->commande.modifierElection.nouvelleQuestion), stdin);
+            break;
+        case 4: // Supprimer Election
+            cmd->type = SUPPRIMER_ELECTION;
+            printf("Entrez l'ID de l'élection à supprimer: ");
+            fgets(buffer, sizeof(buffer), stdin);
+            cmd->commande.supprimerElection.idElection = atoi(buffer);
+            break;
+        case 5: // Retour au menu principal
+            free(cmd);
+            return;
+        default:
+            printf("Choix non valide.\n");
+            free(cmd);
+            return;
+    }
+    enqueueCommand(cmd);
+}
+
+void handleVoteCRUD(int choix) {
+    Commande *cmd = malloc(sizeof(Commande));
+    char buffer[1024];
+
+    if (!cmd) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        return;
+    }
+    memset(cmd, 0, sizeof(Commande));
+
+    switch (choix) {
+        case 1: // Créer Vote
+            cmd->type = CREER_VOTE;
+            printf("Entrez l'ID de l'électeur votant: ");
+            fgets(buffer, sizeof(buffer), stdin);
+            cmd->commande.creerVote.idVotant = atoi(buffer);
+            printf("Entrez l'ID de l'élection pour le vote: ");
+            fgets(buffer, sizeof(buffer), stdin);
+            cmd->commande.creerVote.idElection = atoi(buffer);
+            // Ici, tu dois saisir et affecter les données du vote (cmd->commande.creerVote.ballot, etc.) selon ton implémentation
+            enqueueCommand(cmd);
+            break;
+        case 2: // Lire les résultats des votes
+            cmd->type = LIRE_VOTE;
+            printf("Entrez l'ID de l'élection pour voir les résultats: ");
+            fgets(buffer, sizeof(buffer), stdin);
+            cmd->commande.lireVote.idElection = atoi(buffer);
+            enqueueCommand(cmd);
+            break;
+        case 3: // Retour au menu principal
+            free(cmd);
+            return;
+        default:
+            printf("Choix non valide.\n");
+            free(cmd);
+            return;
+    }
+}
+
+void* receiveCommands(void* arg) {
+    int choixPrincipal, choixCRUD;
+    char buffer[1024];
+    Commande *cmd;
 
     while (1) {
-        printf("Entrez une commande: \n");
-        if (fgets(buffer, 1024, stdin) == NULL) {
-            break;
-        }
+        printf("\nMenu Principal:\n");
+        printf("1. Electeur\n");
+        printf("2. Election\n");
+        printf("3. Vote\n");
+        printf("4. Quitter\n");
+        printf("Votre choix: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        choixPrincipal = atoi(buffer);
 
-        Commande *cmd = malloc(sizeof(Commande));
-        if (!cmd) {
-            fprintf(stderr, "Erreur d'allocation mémoire\n");
-            continue;
-        }
-        memset(cmd, 0, sizeof(Commande));
+        switch (choixPrincipal) {
+            case 1: // Electeur
+                printf("\nElecteur - Choisissez une action:\n");
+                printf("1. Ajouter Electeur\n");
+                printf("2. Lire Electeur\n");
+                printf("3. Modifier Electeur\n");
+                printf("4. Supprimer Electeur\n");
+                printf("5. Retour au menu principal\n");
+                printf("Votre choix: ");
+                fgets(buffer, sizeof(buffer), stdin);
+                choixCRUD = atoi(buffer);
+                handleElecteurCRUD(choixCRUD);
+                break;
 
-        if (strncmp(buffer, "AJOUT", 5) == 0) {
-            printf("Entrez l'identifiant de l'électeur à ajouter: ");
-            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
-                cmd->type = AJOUT_ELECTEUR;
-                strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
-            }
-        } else if (strncmp(buffer, "SUPPRIME", 8) == 0) {
-            printf("Entrez l'identifiant de l'électeur à supprimer: ");
-            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
-                cmd->type = SUPPRIME_ELECTEUR;
-                strncpy(cmd->commande.supprimeElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
-            }
-        } else if (strncmp(buffer, "PRESENT", 7) == 0) {
-            printf("Entrez l'identifiant de l'électeur à vérifier: ");
-            if (fgets(identifiant, ENTITY_ID_SIZE, stdin) != NULL) {
-                cmd->type = EST_PRESENT;
-                strncpy(cmd->commande.estPresent.identifiant, identifiant, ENTITY_ID_SIZE-1);
-            }
-        } else {
-            printf("Commande non reconnue\n");
-            free(cmd);
-            continue;
+            case 2: // Election
+                printf("\nElection - Choisissez une action:\n");
+                printf("1. Créer Election\n");
+                printf("2. Lire Election\n");
+                printf("3. Modifier Election\n");
+                printf("4. Supprimer Election\n");
+                printf("5. Retour au menu principal\n");
+                printf("Votre choix: ");
+                fgets(buffer, sizeof(buffer), stdin);
+                choixCRUD = atoi(buffer);
+                handleElectionCRUD(choixCRUD);
+                break;
+
+            case 3: // Vote
+                printf("\nVote - Choisissez une action:\n");
+                printf("1. Créer Vote\n");
+                printf("2. Lire les résultats des votes\n");
+                printf("3. Retour au menu principal\n");
+                printf("Votre choix: ");
+                fgets(buffer, sizeof(buffer), stdin);
+                choixCRUD = atoi(buffer);
+                handleVoteCRUD(choixCRUD);
+                break;
+
+            case 4: // Quitter
+                printf("Fermeture du serveur...\n");
+                return NULL;
+
+            default:
+                printf("Choix non valide.\n");
+                break;
         }
-        enqueueCommand(cmd);
     }
-
-    return NULL;
 }
 
 int main(int argc, char *argv[]) {

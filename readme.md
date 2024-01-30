@@ -1,32 +1,45 @@
 # Projet de vote
 
-## Etape n°1 : 
+Cette branche se concentre sur la partie crypto du projet.
 
-### Description de l'étape :
 
-Cette étape consiste à mettre en place un tableau circulaire de commande
-et d'implémenter les foncions qui permettent de traiter les commandes.
+Pour installer gmp.h
+apt-get install  libgmp3-dev
 
-**Tâches réalisées :**  
+Commande pour lancer le test de crypto : 
 
-1. Tableau circulaire de commande.
-2. Mise en place de du patron de conception commande.
-3. Inialisation de la base de données avec la création des tables.
-4. Mise en place du modèle producteur consommateur pour les commandes.
+```bash
+gcc test_crypto.c ./../src/crypto.c -o crypto -lgmp
+```
 
-**Tâches à réaliser :**
 
-1. Implémenter les fonctions de traitement des commandes.
+Pour la cryptographie des votes : 
 
-**Rôle des fichiers :** 
+Dans Election_castVote :
 
-1. **bd.c** : Ce fichier contient les fonctions permettant de manipuler la base de données.
-2. **serveur_vote.c** : Ce fichier contient le tableau circulaire de commande et les fonctions de traitement des commandes.
-3. **main_Serveur.c** : Ce fichier permet d'initialiser la base de données et permet de récupérer les commandes et mettres dans le tableau circulaire.
+Le choix de vote (choix) est converti en un nombre entier grand format (mpz_t) en utilisant la bibliothèque GMP.
+Ce nombre est ensuite chiffré à l'aide de la fonction encrypt, qui utilise les clés publiques (n et g) pour produire le texte chiffré c.
+Le texte chiffré c est converti en chaîne de caractères et stocké dans la base de données comme le bulletin de vote chiffré.
 
-## Etape n°2
 
-### Description de l'étape :
+Dans Election_processVotes :
 
-Cette étape à pour but de mettre en place de la cryptographie dans les buletins soumis par les électeurs.
+Pour chaque vote récupéré de la base de données, la chaîne représentant le vote chiffré est convertie en un nombre entier grand format (mpz_t).
+Le vote chiffré est déchiffré en utilisant la fonction decrypt, qui utilise les clés privées (lambda et mu) pour retrouver le vote original m.
+Les votes déchiffrés sont ensuite comptabilisés en fonction de leur contenu (par exemple, 'O' pour oui).
+
+
+
+
+Notes personnelles : 
+
+Pour lancer le test du prof : 
+
+Il faut d'abord "make" dans le dossier src pour compiler les fichiers .c
+
+Puis aller dans le dossier test et faire "make" pour compiler les fichiers .c
+
+Enfin, lancer le test avec la commande :
+
+./test_electeur --file ../data_base/base_de_donnees.db
 

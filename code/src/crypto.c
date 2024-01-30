@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <gmp.h>
-#include "../common//include/crypto.h"
+
+#include "../common/include/crypto.h"
 
 // Key generation
 void generate_keys(mpz_t n, mpz_t lambda, mpz_t g, mpz_t mu)
@@ -35,7 +35,7 @@ void generate_keys(mpz_t n, mpz_t lambda, mpz_t g, mpz_t mu)
 }
 
 // Encryption
-void encrypt(mpz_t c, mpz_t m, mpz_t n, mpz_t g)
+void encripter(mpz_t c, mpz_t m, mpz_t n, mpz_t g)
 {
     mpz_t r, n_square;
     mpz_inits(r, n_square, NULL);

@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include <gmp.h>
 
+
 sqlite3 *database_open(const char *path);
 int database_close(sqlite3 *db);
 int database_init(sqlite3 *db);
@@ -19,7 +20,9 @@ int getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
 
 // usecases election
 void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char *question, const char *dateDebut, const char *dateFin, const char *status);
+void deleteElection(sqlite3 *db, int id);
 void updateElection(sqlite3 *db, int id, const char *question);
+void readElection(sqlite3 *db, int id);
 int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
 
 // bd.h

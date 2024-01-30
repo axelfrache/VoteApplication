@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "../common/include/crypto.h"
+#include "../common/include/util.h"
 
 
 const char *electeur_create = "CREATE TABLE IF NOT EXISTS Electeur(id INTEGER PRIMARY KEY, numeroID BLOB);";
@@ -40,6 +41,7 @@ sqlite3 *database_open(const char *path)
     {
         // Gérer l'erreur
         sqlite3_close(db);
+        notif(RED, "Erreur lors de la creation de la BD: %s", sqlite3_errmsg(db));
         return NULL;
     }
     return db;
@@ -369,7 +371,7 @@ void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *ch
     mpz_set_ui(m, (unsigned long int)choix[0]);  // Assumer que le choix est une simple valeur pour la démonstration
 
     // Chiffrer le choix
-    encrypt(c, m, n, g);
+    encripter(c, m, n, g);
 
     // Convertir le texte chiffré en chaîne pour le stockage
     char *c_str = mpz_get_str(NULL, 10, c);

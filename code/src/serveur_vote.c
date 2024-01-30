@@ -32,7 +32,7 @@ void enqueueCommand(Commande *cmd) {
     commandQueue[queueEnd] = cmd;
     queueEnd = (queueEnd + 1) % MAX_COMMANDS;
 
-    notif(GREEN, "Commande ajoutée au buffer.\\n");
+    notif(GREEN, "Commande ajoutée au buffer.");
     pthread_cond_signal(&condQueueNotEmpty);
     pthread_mutex_unlock(&mutexQueue);
 }
@@ -67,14 +67,14 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
 
     // Ouvrir la base de données (assurez-vous que le chemin est correct)
     sqlite3 *db;
-    if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
+    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
         return;
     }
 
     // Avant d'insérer un électeur, vérifiez s'il existe déjà
     if (electeurExists(db, cmd->identifiant,ENTITY_ID_SIZE) != 0 ) {
-        printf("L'électeur avec l'identifiant %s existe déjà.\n", cmd->identifiant);
+        printf("L'électeur avec l'identifiant %s existe déjà.", cmd->identifiant);
     } else {
         createElecteur(db, cmd->identifiant, strlen(cmd->identifiant)); // Utilise strlen pour la taille si c'est une chaîne de caractères
     }
@@ -110,12 +110,8 @@ void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
         return;
     }
 
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
-
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
+    
     // Demander confirmation avant de procéder à la mise à jour
     printf("Confirmez-vous la mise à jour de l'électeur '%s' vers '%s'? (y/n): ", cmd->ancienIdentifiant, cmd->nouvelIdentifiant);
     char confirmation[2];
@@ -136,11 +132,7 @@ void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
         return;
     }
     // Ouvrir la base de données
-    sqlite3 *db;
-    if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+    sqlite3 *db database_open("../data_base/base_de_donnees.db");
     // Appeler deleteElecteur
     deleteElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
 
@@ -171,11 +163,7 @@ void traitementCreerElection(CreerElectionCmd *cmd) {
         return;
     }
 
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur d'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
     createElection(db, cmd->identifiant, ENTITY_ID_SIZE, cmd->question, cmd->dateDebut, cmd->dateFin, statusClean);
     sqlite3_close(db);
@@ -191,11 +179,7 @@ void traitementLireElection(LireElectionCmd *cmd) {
         return;
     }
 
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
     readElection(db, cmd->idElection);
 
@@ -210,11 +194,7 @@ void traitementModifierElection(ModifierElectionCmd *cmd) {
         return;
     }
 
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
     updateElection(db, cmd->idElection, cmd->nouvelleQuestion);
 
@@ -230,11 +210,7 @@ void traitementSupprimerElection(SupprimerElectionCmd *cmd) {
         return;
     }
 
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
     deleteElection(db, cmd->idElection);
 
@@ -261,9 +237,9 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
     generate_keys(n, lambda, g, mu);  // Utilise la fonction fournie pour générer les clés
 
     // Ouvre la base de données
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
+
+    if (db == NULL) {
         mpz_clears(n, g, lambda, mu, NULL);  // Libérer les ressources GMP
         return;
     }
@@ -294,9 +270,9 @@ void traitementLireVote(LireVoteCmd *cmd) {
     generate_keys(n, lambda, g, mu);  // Utilise la même fonction pour générer toutes les clés
 
     // Ouvre la base de données
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
+    
+    if (db != NULL) {
         mpz_clears(lambda, mu, n, g, NULL);  // Libérer les ressources GMP
         return;
     }

@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
+#include <unistd.h>
+
 #include "./../common/include//messages.h"
 #include "./../common/include/bd.h"
-
-#include <pthread.h>
+#include "../common/include/util.h"
 
 extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
@@ -214,6 +216,7 @@ void* receiveCommands(void* arg) {
                 printf("Choix non valide.\n");
                 break;
         }
+        sleep(2);
     }
 }
 
@@ -227,8 +230,9 @@ int main(int argc, char *argv[]) {
 
     // Ouvrir ou créer la base de données si elle n'existe pas
     db = database_open(dbPath);
+    
     if (!db) {
-        fprintf(stderr, "Impossible d'ouvrir ou de créer la base de données.\n");
+        err_n_die("Impossible d'ouvrir ou de créer la base de données.\n");
         return 1;
     }
 

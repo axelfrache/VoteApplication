@@ -6,8 +6,51 @@ Ce projet simule un système de vote électronique. Il est conçu autour du mod�
 
 ## Rappel des besoins
 
+Le projet vise à élaborer un système de vote électronique garantissant l'authenticité et la justesse des votes, avec un décompte complet et transparent des résultats, tout en assurant l'accessibilité à tous les électeurs éligibles. Les fonctionnalités essentielles comprennent une gestion solide des électeurs et des élections, avec des opérations CRUD pour les deux, ainsi qu'un système de vote sécurisé et un comptage fiable des résultats. Le système met un accent particulier sur la validation des données, les mesures de sécurité pour prévenir les actions non autorisées, et les mécanismes pour vérifier l'éligibilité des électeurs et l'intégrité des votes.
 
 
+Pour résumer les besoins du projet de système de vote dans votre README, vous pourriez inclure les points suivants :
+
+- **Authenticité des votes** : Assurer que chaque vote est authentique et provient d'un électeur éligible.
+- **Intégrité et transparence** : Garantir la justesse du décompte des votes et la transparence des résultats.
+- **Accessibilité** : Permettre à tous les électeurs éligibles de participer facilement au vote.
+- **Sécurité** : Mettre en place des mesures de sécurité robustes pour prévenir les actions non autorisées et protéger les données.
+- **Vérification** : Disposer de mécanismes pour vérifier l'éligibilité des électeurs et l'intégrité des votes.
+
+## Logique de programmation
+
+La logique de programmation de ce système de vote est conçue pour garantir la fluidité, la sécurité et l'efficacité du traitement des commandes. Voici les principaux éléments :
+
+- **Gestion de la base de données** : Le programme gère automatiquement la base de données située dans le dossier "data_base". Il crée la base de données si elle n'existe pas et la charge au démarrage du système, assurant ainsi l'intégrité et la disponibilité des données.
+
+
+- **Tableau circulaire** : Nous utilisons un tableau circulaire pour stocker les commandes dans une file d'attente. Cette structure de données optimise l'utilisation de l'espace mémoire et facilite le traitement séquentiel des commandes sans perte de performance.
+
+
+- **Threading** : Le système emploie une architecture multithread pour séparer la réception des commandes de leur traitement. Cela permet de réduire les temps d'attente et d'améliorer la réactivité du système face aux sollicitations simultanées.
+
+
+- **Synchronisation** : Des mutex et des variables conditionnelles sont utilisés pour protéger les accès concurrents aux ressources partagées, notamment le tableau circulaire des commandes. Cette approche prévient les conditions de course et assure la cohérence des données à travers les différents threads.
+
+
+- **Traitement des commandes** : Le système prend en charge diverses commandes pour la gestion des électeurs, des élections et des votes. Chaque commande est encapsulée dans une structure unifiée, permettant un traitement générique et flexible des différentes actions requises.
+
+Cette architecture permet au système de vote de gérer efficacement un grand nombre de commandes tout en garantissant la sécurité et l'intégrité des opérations effectuées.
+
+
+## Logique des tests
+
+Concernant les tests nous avons mis en place une stratégie de tests
+
+## Cryptographie des votes
+
+La sécurité des votes est assurée par cryptographie, utilisant la bibliothèque GMP. Les fonctions clés sont **Election_castVote** pour le chiffrement des votes et **Election_processVotes** pour le déchiffrement et le comptage.
+Ces fonctions se trouvent dans le fichier "bd.c" et permettent de chiffrer les votes lorsqu'on en ajoute un et de déchiffrer les votes lorsqu'on veut consulter les résultats d'un vote.
+
+Notre stratégie est de chiffré les votes lors de l'ajout d'un vote et de les déchiffrer lors de la consultation des résultats d'un vote.
+
+Je sais que vous pourrez faire la remarque dans le future que si il y a un client/server, le trajet des votes se feront en clair donc nous pensons par la suite mettre en place des communications sécurisées entre le client et le serveur pour palier ce problème.
+Le but de notre stratégie est que si un attaquant arrive à rentrer dans le serveur, il ne pourra pas voir les votes en clair.
 
 ## Patron de Conception
 
@@ -124,40 +167,5 @@ cd ../build
 Voici la liste de toutles tests disponibles :
 
 ![imageListeTestDisponible.png](imgREADME%2FimageListeTestDisponible.png)
-
-
-## Logique de programmation
-
-
-
-
-Un point important à aborder c'est la base de données qui se trouve dans le dossier "data_base" et l'utilisateur n'a pas besoin de s'en occuper, car le programme s'en occupe tout seul.
-Le programme s'en occupe dans tous les cas possibles : 
-- Si la base de données n'existe pas, le programme la crée.
-- Si la base de données existe, le programme la charge (et la vide).
-
-
-
-## Logique des tests
-
-Concernant les tests nous avons mis en place une stratégie de tests
-
-## Cryptographie des votes
-
-La sécurité des votes est assurée par cryptographie, utilisant la bibliothèque GMP. Les fonctions clés sont **Election_castVote** pour le chiffrement des votes et **Election_processVotes** pour le déchiffrement et le comptage.
-Ces fonctions se trouvent dans le fichier "bd.c" et permettent de chiffrer les votes lorsqu'on en ajoute un et de déchiffrer les votes lorsqu'on veut consulter les résultats d'un vote.
-
-Notre stratégie est de chiffré les votes lors de l'ajout d'un vote et de les déchiffrer lors de la consultation des résultats d'un vote.
-
-Je sais que vous pourrez faire la remarque dans le future que si il y a un client/server, le trajet des votes se feront en clair donc nous pensons par la suite mettre en place des communications sécurisées entre le client et le serveur pour palier ce problème.
-Le but de notre stratégie est que si un attaquant arrive à rentrer dans le serveur, il ne pourra pas voir les votes en clair.
-
-
-
-Installation de GMP :
-
-````bash
-apt-get install libgmp3-dev
-````
 
 

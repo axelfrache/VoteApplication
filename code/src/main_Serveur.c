@@ -164,7 +164,7 @@ void* receiveCommands(void* arg) {
         printf("2. Election\n");
         printf("3. Vote\n");
         printf("4. Quitter\n");
-        printf("Votre choix: ");
+        printf("Votre choix: \n");
         fgets(buffer, sizeof(buffer), stdin);
         choixPrincipal = atoi(buffer);
 

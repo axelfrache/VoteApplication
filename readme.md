@@ -40,13 +40,28 @@ Pour les votes :
 
 ## Fonctionnement de notre application
 
-Comme dans le projet il y avait déja des tests nous avons continué à creer des fichiers de tests pour tester nos commandes.
+Nous avons mis en place deux façons de pouvoir profiter de notre application.
+
+La première est de compiler le projet avec la commande suivante : 
+
+```bash
+make main
+```
+En suite rendez-vous dans le dossier "build" et lancer le fichier main avec la commande : 
+
+```bash
+./main
+```
+
+
+Pour la deuxième facon nous avons continué à creer des fichiers de tests pour tester nos commandes.
 
 Pour se faire vous devez dans un premier aller dans le dossier "src" ouvrez un terminal et lancer la commande "make" pour compiler les fichiers .c
 
 Ensuite vous devez aller dans le dossier "test" et lancer la commande "make" pour compiler les fichiers .c
 
 Enfin rendez vous dans le dossier "build" et lancer les fichiers de test avec la commande "./nom_du_fichier"
+
 
 ## Notre logique de programmation
 

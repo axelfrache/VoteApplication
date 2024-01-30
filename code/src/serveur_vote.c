@@ -122,18 +122,11 @@ void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
         return;
     }
 
-    // Vérifie si l'ancien électeur existe
     if (!electeurExists(db, cmd->ancienIdentifiant, ENTITY_ID_SIZE)) {
         printf("L'électeur avec l'identifiant '%s' n'existe pas.\n", cmd->ancienIdentifiant);
     } else {
-        // Demander confirmation avant de procéder à la mise à jour
-        printf("Confirmez-vous la mise à jour de l'électeur '%s' vers '%s'? (y/n): ", cmd->ancienIdentifiant, cmd->nouvelIdentifiant);
-        char confirmation[2];
-        if (fgets(confirmation, 2, stdin) && confirmation[0] == 'y') {
-            updateElecteur(db, cmd->ancienIdentifiant, ENTITY_ID_SIZE, cmd->nouvelIdentifiant, ENTITY_ID_SIZE);
-        } else {
-            printf("Mise à jour annulée.\n");
-        }
+        // Procède directement à la mise à jour sans demander de confirmation
+        updateElecteur(db, cmd->ancienIdentifiant, ENTITY_ID_SIZE, cmd->nouvelIdentifiant, ENTITY_ID_SIZE);
     }
 
     sqlite3_close(db);
@@ -142,12 +135,10 @@ void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
 
 void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
     printf("Traitement SupprimeElecteurCmd\n");
-
     if (cmd == NULL || cmd->identifiant[0] == '\0') {
         printf("Commande invalide ou identifiant manquant.\n");
         return;
     }
-
     sqlite3 *db;
     if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
         fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));

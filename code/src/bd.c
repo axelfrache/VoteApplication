@@ -450,6 +450,7 @@ void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, 
     }
 }
 
+// Fonction qui vérifie si un vote existe déjà pour un utilisateur et une élection donnés
 int hasUserAlreadyVoted(sqlite3 *db, int idVotant, int idElection) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT COUNT(*) FROM Vote WHERE idVotant = ? AND idElection = ?;";

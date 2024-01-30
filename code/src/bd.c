@@ -115,7 +115,6 @@ void readElecteur(sqlite3 *db, const char *numeroID, int size)
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            // Supposons que numeroID est la première colonne
             const char *id = sqlite3_column_blob(stmt, 0);
             printf("Electeur: %s\n", id);
         }
@@ -395,8 +394,6 @@ void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *ch
     free(c_str);
 }
 
-
-
 void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, mpz_t n) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT * FROM Vote WHERE idElection = ?;";
@@ -434,5 +431,32 @@ void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, 
     } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
+}
+
+int hasUserAlreadyVoted(sqlite3 *db, int idVotant, int idElection) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT COUNT(*) FROM Vote WHERE idVotant = ? AND idElection = ?;";
+    int result = 0;
+
+    // Préparation de la requête SQL
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        // Liaison des paramètres à la requête
+        sqlite3_bind_int(stmt, 1, idVotant);
+        sqlite3_bind_int(stmt, 2, idElection);
+
+        // Exécution de la requête
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            // Récupération du résultat (le nombre de lignes correspondant à la condition)
+            result = sqlite3_column_int(stmt, 0);
+        }
+
+        // Libération de la mémoire associée à l'objet statement
+        sqlite3_finalize(stmt);
+    } else {
+        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+
+    // Si le résultat est supérieur à 0, alors un vote existe déjà pour cet utilisateur et cette élection
+    return result > 0;
 }
 

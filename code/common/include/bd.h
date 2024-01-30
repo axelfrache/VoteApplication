@@ -22,8 +22,9 @@ void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char
 void updateElection(sqlite3 *db, int id, const char *question);
 int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
 
-// bd.h
+// usecase vote
 void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *choix, mpz_t n, mpz_t g);
 void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, mpz_t n);
+int hasUserAlreadyVoted(sqlite3 *db, int idVotant, int idElection);
 
 #endif

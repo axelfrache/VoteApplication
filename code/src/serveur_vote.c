@@ -76,7 +76,7 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
     if (electeurExists(db, cmd->identifiant,ENTITY_ID_SIZE) != 0 ) {
         printf("L'électeur avec l'identifiant %s existe déjà.\n", cmd->identifiant);
     } else {
-        createElecteur(db, cmd->identifiant, strlen(cmd->identifiant)); // Utilise strlen pour la taille si c'est une chaîne de caractères
+        createElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
     }
     // Fermer la base de données
     sqlite3_close(db);
@@ -268,15 +268,18 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
         return;
     }
 
-    // Chiffrement et enregistrement du vote
-    Election_castVote(db, cmd->idVotant, cmd->idElection, cmd->ballot, n, g);
+    // Vérification si l'utilisateur a déjà voté
+    if (hasUserAlreadyVoted(db, cmd->idVotant, cmd->idElection)) {
+        printf("L'électeur avec l'ID %d a déjà voté pour l'élection %d.\n", cmd->idVotant, cmd->idElection);
+    } else {
+        // Chiffrement et enregistrement du vote
+        Election_castVote(db, cmd->idVotant, cmd->idElection, cmd->ballot, n, g);
+    }
 
     // Libération des ressources GMP et de la base de données
     mpz_clears(n, g, lambda, mu, NULL);
     sqlite3_close(db);
 }
-
-
 
 void traitementLireVote(LireVoteCmd *cmd) {
     printf("Traitement LireVoteCmd\n");

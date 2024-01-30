@@ -64,7 +64,6 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
         printf("Commande invalide ou identifiant manquant.\n");
         return;
     }
-
     // Ouvrir la base de données (assurez-vous que le chemin est correct)
     sqlite3 *db;
     if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
@@ -84,7 +83,6 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
 
 void traitementLireElecteur(LireElecteurCmd *cmd) {
     printf("Traitement LireElecteurCmd\n");
-
     if (cmd == NULL || cmd->identifiant[0] == '\0') {
         printf("Commande invalide ou identifiant manquant.\n");
         return;

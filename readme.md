@@ -1,131 +1,82 @@
-# Projet de vote
+# Projet de Système de Vote
 
+## Présentation du Projet
 
-## Présention du projet
+Ce projet simule un système de vote électronique. Il est conçu autour du modèle producteur/consommateur, utilisant des threads pour gérer les commandes dans une file d'attente. Les commandes sont déposées dans un tableau circulaire partagé et traitées par des threads consommateurs.
 
-Ce projet est un projet qui simule un serveur de vote. 
+## Patron de Conception
 
-Il repose sur le système de producteur/consommateur. 
+Le projet s'appuie sur le patron de conception Commande, avec les commandes suivantes implémentées :
 
-Nous avons mis en place un système de thread qui permettent de mettre des commandes dans une file d'attente
-et d'autres threads qui vont récupérer ces commandes et les traiter.
+### Pour les Électeurs :
+- Création d'un électeur
+- Lecture des informations d'un électeur
+- Mise à jour des informations d'un électeur
+- Suppression d'un électeur
 
-Il y a également uns système de ressources partagées via un tableau circulaire qui permet de déposer des commandes
-et de les récupérer.
+### Pour les Élections :
+- Création d'une élection
+- Lecture des informations d'une élection
+- Mise à jour des informations d'une élection
+- Suppression d'une élection
 
-## Patron commande
+### Pour les Votes :
+- Enregistrement d'un vote
+- Consultation des résultats d'un vote
 
-Ce projet repose essentiellement sur le patron de conception commande.
+## Utilisation de l'Application
 
-Voici les commandes que nous avons implémentées dans ce projet :
+Il existe deux manières d'utiliser l'application :
 
-Pour les électeurs : 
+### 1. Exécution Directe :
 
-- Créer un électeur
-- Lire un électeur
-- Mettre à jour un électeur
-- Supprimer un électeur
-
-Pour les élections : 
-
-- Créer une élection
-- Lire une élection
-- Mettre à jour une élection
-- Supprimer une élection
-
-Pour les votes :
-
-- Créer un vote
-- Lire un vote
-
-## Fonctionnement de notre application
-
-Nous avons mis en place deux façons de pouvoir profiter de notre application.
-
-La première est de compiler le projet avec la commande suivante : 
+Compilez le projet avec la commande :
 
 ```bash
 make main
 ```
-En suite rendez-vous dans le dossier "build" et lancer le fichier main avec la commande : 
+Naviguez ensuite dans le dossier "build" et exécutez le programme principal :
 
 ```bash
 ./main
 ```
 
+### 2. Tests : 
 
-Pour la deuxième facon nous avons continué à creer des fichiers de tests pour tester nos commandes.
-
-Pour se faire vous devez dans un premier aller dans le dossier "src" ouvrez un terminal et lancer la commande "make" pour compiler les fichiers .c
-
-Ensuite vous devez aller dans le dossier "test" et lancer la commande "make" pour compiler les fichiers .c
-
-Enfin rendez vous dans le dossier "build" et lancer les fichiers de test avec la commande "./nom_du_fichier"
-
-
-## Notre logique de programmation
-
-Commencons par la logique du CRUD d'un électeur : 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Cette branche se concentre sur la partie crypto du projet.
-
-
-Pour installer gmp.h : 
-apt-get install  libgmp3-dev
-
-Commande pour lancer le test de crypto : 
+Pour tester les différentes commandes, compilez d'abord les fichiers sources :
 
 ```bash
-gcc test_crypto.c ./../src/crypto.c -o crypto -lgmp
+cd src
+make
 ```
 
+Puis compilez les tests :
 
-Pour la cryptographie des votes : 
+```bash
 
-Dans Election_castVote :
+cd ../test
+make
+```
 
-Le choix de vote (choix) est converti en un nombre entier grand format (mpz_t) en utilisant la bibliothèque GMP.
-Ce nombre est ensuite chiffré à l'aide de la fonction encrypt, qui utilise les clés publiques (n et g) pour produire le texte chiffré c.
-Le texte chiffré c est converti en chaîne de caractères et stocké dans la base de données comme le bulletin de vote chiffré.
+Enfin, exécutez les tests depuis le dossier "build" :
 
+```bash
+cd ../build
+./nom_du_test
+```
 
-Dans Election_processVotes :
-
-Pour chaque vote récupéré de la base de données, la chaîne représentant le vote chiffré est convertie en un nombre entier grand format (mpz_t).
-Le vote chiffré est déchiffré en utilisant la fonction decrypt, qui utilise les clés privées (lambda et mu) pour retrouver le vote original m.
-Les votes déchiffrés sont ensuite comptabilisés en fonction de leur contenu (par exemple, 'O' pour oui).
-
-
+## Logique de programmation
 
 
-Notes personnelles : 
 
-Pour lancer le test du prof : 
+## Cryptographie des votes
 
-Il faut d'abord "make" dans le dossier src pour compiler les fichiers .c
+La sécurité des votes est assurée par cryptographie, utilisant la bibliothèque GMP. Les fonctions clés sont Election_castVote pour le chiffrement des votes et Election_processVotes pour le déchiffrement et le comptage.
 
-Puis aller dans le dossier test et faire "make" pour compiler les fichiers .c
+Installation de GMP :
 
-Enfin, lancer le test avec la commande :
+````bash
+apt-get install libgmp3-dev
+````
 
-./test_electeur --file ../data_base/base_de_donnees.db
 

@@ -63,7 +63,7 @@ Commande* dequeueCommand() {
 
 /**
  * Fonctions de traitement des commandes
- */
+ 
 void traitementAjoutElecteur(AjoutElecteurCmd *cmd) {
     printf("Traitement AjoutElecteurCmd\n");
     if (cmd == NULL || cmd->identifiant[0] == '\0') {
@@ -145,7 +145,7 @@ void traitementEstPresent(EstPresentCmd *cmd) {
 }
 
 
-/* Gestion des commandes Liées à Election */
+// Gestion des commandes Liées à Election 
 void traitementCreerElection(CreerElectionCmd *cmd){
 
 }
@@ -159,6 +159,7 @@ void traitementLireElection(LireElectionCmd *cmd){
 void traitementSupprimerElection(SupprimerElectionCmd *cmd){
     
 }
+*/
 
 // Thread pour le traitement des commandes
 void* processCommands(void* arg) {

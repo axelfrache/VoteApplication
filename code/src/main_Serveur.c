@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "./../common/include//messages.h"
-#include "./../common/include/bd.h"
+#include "../common/include//messages.h"
+#include "../common/include/bd.h"
 #include "../common/include/util.h"
 #include <pthread.h>
 

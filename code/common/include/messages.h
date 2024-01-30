@@ -5,6 +5,36 @@
 
 #define COMMAND_NUMBER 12
 
+typedef struct
+{
+    void (*execute) (char identifiant[ENTITY_ID_SIZE]);
+
+} commande;
+typedef struct 
+{
+    char *name;
+    char signature[256]; //la signature de la commande
+    commande base;
+
+} Commande;
+
+typedef struct
+{
+    void (*execute) (char identifiant[ENTITY_ID_SIZE], char identifiantElection[ENTITY_ID_SIZE], char bulletin[ENTITY_ID_SIZE]);
+    
+} commandeLongue;
+
+typedef struct 
+{
+    char *name;
+    char signature[256]; // La signature de la commmande
+    commandeLongue base;
+
+} CommandeLongue;
+
+
+/*
+
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
@@ -46,7 +76,7 @@ typedef struct {
 
 typedef enum {
     NOP = 0,
-    /* Commandes pour les électeurs */
+    /* Commandes pour les électeurs 
 
     AJOUT_ELECTEUR, // Commande pour ajouter un électeur
     SUPPRIME_ELECTEUR, // Commande pour supprimer un électeur
@@ -55,7 +85,7 @@ typedef enum {
 
     EST_PRESENT, //Commande qui vérifie si un électeur est présent dans la liste des électeurs
 
-    /* Commandes pour les élections */
+    /* Commandes pour les élections 
 
     CREER_ELECTION,
     MODIFIER_ELECTION,
@@ -64,7 +94,7 @@ typedef enum {
 
     RESULTAT_ELECTION,
 
-    /* Commandes pour la gestion des votes */
+    /* Commandes pour la gestion des votes 
     VOTER,
     VALIDER_VOTE
 
@@ -95,5 +125,5 @@ typedef struct {
 
     } commande;
 } Commande;
-
+*/
 #endif

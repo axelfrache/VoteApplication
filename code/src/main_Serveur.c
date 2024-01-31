@@ -132,13 +132,15 @@ void handleVoteCRUD(int choix) {
             printf("Entrez l'identifiant de l'élection pour le vote: ");
             fgets(cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE, stdin);
 
+            printf("Entrez le choix du vote: ");
+            fgets(cmd->commande.creerVote.ballot, 256, stdin);
+
             enqueueCommand(cmd);
             break;
         case 2: // Lire les résultats des votes
             cmd->type = LIRE_VOTE;
             printf("Entrez l'ID de l'élection pour voir les résultats: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.lireVote.idElection = atoi(buffer);
+            fgets(cmd->commande.lireVote.identifiant, ENTITY_ID_SIZE, stdin);
             enqueueCommand(cmd);
             break;
         case 3: // Retour au menu principal

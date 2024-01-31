@@ -306,7 +306,7 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
     }
     // Vérification si l'utilisateur a déjà voté
     if (hasUserAlreadyVoted(db, idVotant, idElection)) {
-        printf("L'électeur avec l'ID %d a déjà voté pour l'élection %d.\n", idVotant, idElection);
+        printf("L'électeur avec l'ID %s a déjà voté pour l'élection %s.\n", cmd->numeroID, cmd->identifiant);
     } else {
         // Chiffrement et enregistrement du vote
         Election_castVote(db, idVotant, idElection, cmd->ballot, n, g);
@@ -320,31 +320,42 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
 void traitementLireVote(LireVoteCmd *cmd) {
     printf("Traitement LireVoteCmd\n");
 
-    if (cmd == NULL || cmd->idElection < 1) {
-        printf("Commande invalide ou ID d'élection manquant.\n");
+    if (!cmd || cmd->identifiant[0] == '\0') {
+        printf("Commande invalide ou identifiant d'élection manquant.\n");
+        return;
+    }
+
+    // Supprimer le caractère de nouvelle ligne de l'identifiant si présent
+    cmd->identifiant[strcspn(cmd->identifiant, "\n")] = 0;
+
+    sqlite3 *db;
+    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
+        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    // Récupérer l'ID de l'élection à partir de l'identifiant
+    int idElection = Election_getIdFromNumeroID(db, cmd->identifiant, ENTITY_ID_SIZE);
+
+    if (idElection == -1) {
+        printf("L'élection avec l'identifiant '%s' n'existe pas.\n", cmd->identifiant);
+        sqlite3_close(db);
         return;
     }
 
     // Initialisation des variables GMP pour la cryptographie
-    mpz_t lambda, mu, n, g;
-    mpz_inits(lambda, mu, n, g, NULL);
+    mpz_t n, g, lambda, mu;
+    mpz_inits(n, g, lambda, mu, NULL);
 
     // Générer les clés publiques et privées (n, g, lambda, mu)
-    generate_keys(n, lambda, g, mu);  // Utilise la même fonction pour générer toutes les clés
+    // Cette étape peut varier en fonction de votre système. Vous pourriez avoir besoin de récupérer les clés d'une autre manière.
+    generate_keys(n, lambda, g, mu);
 
-    // Ouvre la base de données
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        mpz_clears(lambda, mu, n, g, NULL);  // Libérer les ressources GMP
-        return;
-    }
-
-    // Déchiffrement et traitement des votes
-    Election_processVotes(db, cmd->idElection, lambda, mu, n);
+    // Traitement et affichage des votes
+    Election_processVotes(db, idElection, lambda, mu, n);
 
     // Libération des ressources GMP et de la base de données
-    mpz_clears(lambda, mu, n, g, NULL);
+    mpz_clears(n, g, lambda, mu, NULL);
     sqlite3_close(db);
 }
 

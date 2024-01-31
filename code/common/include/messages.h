@@ -82,7 +82,7 @@ typedef struct {
 
 // Structure de commande pour lire un vote
 typedef struct {
-    int idElection;
+    char identifiant[ENTITY_ID_SIZE];
 } LireVoteCmd;
 
 // Structure générale pour une commande

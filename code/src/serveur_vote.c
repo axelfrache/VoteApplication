@@ -25,14 +25,13 @@ void enqueueCommand(Commande *cmd) {
     pthread_mutex_lock(&mutexQueue);
 
     while ((queueEnd + 1) % MAX_COMMANDS == queueStart) {
-        notif(RED, "Buffer plein, en attente d'une place...\\n");
+        notif(RED, "Buffer plein, en attente d'une place...");
         pthread_cond_wait(&condQueueNotFull, &mutexQueue);
     }
 
     commandQueue[queueEnd] = cmd;
     queueEnd = (queueEnd + 1) % MAX_COMMANDS;
 
-    notif(GREEN, "Commande ajoutée au buffer.\\n");
     pthread_cond_signal(&condQueueNotEmpty);
     pthread_mutex_unlock(&mutexQueue);
 }
@@ -41,14 +40,12 @@ Commande *dequeueCommand() {
     pthread_mutex_lock(&mutexQueue);
 
     while (queueStart == queueEnd) {
-        notif(RED, "Buffer vide, en attente d'une commande...");
         pthread_cond_wait(&condQueueNotEmpty, &mutexQueue);
     }
 
     Commande *cmd = commandQueue[queueStart];
     queueStart = (queueStart + 1) % MAX_COMMANDS;
 
-    notif(GREEN, "Commande récupérée du buffer.\n");
     pthread_cond_signal(&condQueueNotFull);
     pthread_mutex_unlock(&mutexQueue);
 
@@ -65,11 +62,7 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
         return;
     }
     // Ouvrir la base de données (assurez-vous que le chemin est correct)
-    sqlite3 *db;
-    if (sqlite3_open("./../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+    sqlite3 *db = database_open("../data_base/base_de_donnees.db");
 
     // Avant d'insérer un électeur, vérifiez s'il existe déjà
     if (electeurExists(db, cmd->numeroID, ENTITY_ID_SIZE) != 0) {

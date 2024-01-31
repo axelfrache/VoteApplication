@@ -69,8 +69,6 @@ typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } SupprimerElectionCmd;
 
-
-
 // Structure de commande pour créer un vote
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
@@ -78,7 +76,6 @@ typedef struct {
     char ballot[256];
     char hashValidation[256];
 } CreerVoteCmd;
-
 
 // Structure de commande pour lire un vote
 typedef struct {

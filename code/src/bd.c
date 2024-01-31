@@ -87,7 +87,7 @@ int clear_database(sqlite3 *db) {
 void createElecteur(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "INSERT INTO Electeur (numeroID) VALUES (?);";
-
+    
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         const char *data = numeroID;
         // int size = strlen(data) + 1; // +1 pour le caractère nul de fin
@@ -109,20 +109,20 @@ void createElecteur(sqlite3 *db, const char *numeroID, int size) {
 void readElecteur(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT * FROM Electeur WHERE numeroID = ?;";
-
+    notif(GREEN, "Test");
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
 
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             const char *id = sqlite3_column_blob(stmt, 0);
             const char *numeroID = sqlite3_column_blob(stmt, 1);
-            printf("Electeur: %s\n", id);
-            printf("NumeroID: %s\n", numeroID);
+            notif(NONE, "Electeur: %s", id);
+            notif(NONE, "NumeroID: %s", numeroID);
         }
 
         sqlite3_finalize(stmt);
     } else {
-        printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
+        notif(RED, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "./../common/include//messages.h"
 #include "./../common/include/bd.h"
@@ -10,7 +11,6 @@
 
 extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
-
 
 void handleElecteurCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
@@ -79,11 +79,17 @@ void handleElectionCRUD(int choix) {
             printf("Entrez la question de l'élection: ");
             fgets(cmd->commande.creerElection.question, sizeof(cmd->commande.creerElection.question), stdin);
             printf("Entrez la date de début (YYYY-MM-DD): ");
-            fgets(cmd->commande.creerElection.dateDebut, sizeof(cmd->commande.creerElection.dateDebut), stdin);
+
+            time_t t = time(NULL);
+            struct tm *localtm = localtime(&t);
+            char date[20];
+            sprintf(date, "%d-%d-%d", localtm->tm_year + 1900, localtm->tm_mon + 1, localtm->tm_mday);
+            strcat(cmd->commande.creerElection.dateDebut, date);
+            notif(GREEN, "Date actuelle : %s", cmd->commande.creerElection.dateDebut);
             printf("Entrez la date de fin (YYYY-MM-DD): ");
             fgets(cmd->commande.creerElection.dateFin, sizeof(cmd->commande.creerElection.dateFin), stdin);
-            printf("Entrez le statut de l'élection (active/closed/canceled): ");
-            fgets(cmd->commande.creerElection.status, sizeof(cmd->commande.creerElection.status), stdin);
+            strcat(cmd->commande.creerElection.status, "active");
+            notif(RED, "Status: %s", cmd->commande.creerElection.status);
             break;
         case 2: // Lire Election
             cmd->type = LIRE_ELECTION;
@@ -216,7 +222,6 @@ void* receiveCommands(void* arg) {
                 printf("Choix non valide.\n");
                 break;
         }
-        sleep(2);
     }
 }
 

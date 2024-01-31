@@ -12,9 +12,9 @@
 #define ENTITY_ID_SIZE 256
 
 void traitementCreerElecteur(AjoutElecteurCmd *cmd);
-void traitementCreerElection(CreerElectionCmd *cmd, sqlite3 *db);
-void traitementCreerVote(CreerVoteCmd *cmd, sqlite3 *db);
-void traitementLireVote(LireVoteCmd *cmd, sqlite3 *db);
+void traitementCreerElection(CreerElectionCmd *cmd);
+void traitementCreerVote(CreerVoteCmd *cmd);
+void traitementLireVote(LireVoteCmd *cmd);
 
 void afficherSeparateurTest(const char *titreTest);
 void afficherResultatTest(const char *testDescription, gboolean reussi);
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
             .dateFin = "2023-12-31",
             .status = "active"
     };
-    traitementCreerElection(&creerElectionCmd, db);
+    traitementCreerElection(&creerElectionCmd);
 
     // Créer un vote
     afficherSeparateurTest("Création d'un vote");
@@ -78,14 +78,14 @@ int main(int argc, char *argv[]) {
             .identifiant = "ELECT123",  // Utilisez l'ID de l'élection créée
             .ballot = "Oui"  // ou toute autre option de vote que votre système prend en charge
     };
-    traitementCreerVote(&creerVoteCmd, db);
+    traitementCreerVote(&creerVoteCmd);
 
     // Lire les votes
     afficherSeparateurTest("Lecture des votes");
     LireVoteCmd lireVoteCmd = {
             .identifiant = "ELECT123"  // Utilisez l'ID de l'élection pour laquelle vous voulez lire les votes
     };
-    traitementLireVote(&lireVoteCmd, db);
+    traitementLireVote(&lireVoteCmd);
 
     sqlite3_close(db);
     g_option_context_free(context);

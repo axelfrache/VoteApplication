@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "./../common/include//messages.h"
-#include "./../common/include/bd.h"
+#include "../common/include/messages.h"
+#include "../common/include/bd.h"
 
 #include <pthread.h>
 
@@ -25,27 +25,32 @@ void handleElecteurCRUD(int choix) {
             cmd->type = AJOUT_ELECTEUR;
             printf("Entrez le numeroID de l'électeur à ajouter: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            numeroID[strcspn(numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             strncpy(cmd->commande.ajoutElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 2: // Lire Electeur
             cmd->type = LIRE_ELECTEUR;
             printf("Entrez le numeroID de l'électeur à lire: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            numeroID[strcspn(numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             strncpy(cmd->commande.lireElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 3: // Modifier Electeur
             cmd->type = MODIFIER_ELECTEUR;
             printf("Entrez l'ancien numeroID de l'électeur à modifier: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            numeroID[strcspn(numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
             printf("Entrez le nouvel numeroID de l'électeur: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            numeroID[strcspn(numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             strncpy(cmd->commande.modifierElecteur.nouvelNumeroID, numeroID, ENTITY_ID_SIZE-1);
-         break;
+            break;
         case 4: // Supprimer Electeur
             cmd->type = SUPPRIME_ELECTEUR;
             printf("Entrez le numeroID de l'électeur à supprimer: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            numeroID[strcspn(numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             strncpy(cmd->commande.supprimeElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 5: // Retour au menu principal
@@ -74,34 +79,41 @@ void handleElectionCRUD(int choix) {
             cmd->type = CREER_ELECTION;
             printf("Entrez l'identifiant de l'élection à créer: ");
             fgets(cmd->commande.creerElection.identifiant, ENTITY_ID_SIZE, stdin);
+            cmd->commande.creerElection.identifiant[strcspn(cmd->commande.creerElection.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             printf("Entrez la question de l'élection: ");
             fgets(cmd->commande.creerElection.question, sizeof(cmd->commande.creerElection.question), stdin);
+            cmd->commande.creerElection.question[strcspn(cmd->commande.creerElection.question, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             printf("Entrez la date de début (YYYY-MM-DD): ");
             fgets(cmd->commande.creerElection.dateDebut, sizeof(cmd->commande.creerElection.dateDebut), stdin);
+            cmd->commande.creerElection.dateDebut[strcspn(cmd->commande.creerElection.dateDebut, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             printf("Entrez la date de fin (YYYY-MM-DD): ");
             fgets(cmd->commande.creerElection.dateFin, sizeof(cmd->commande.creerElection.dateFin), stdin);
+            cmd->commande.creerElection.dateFin[strcspn(cmd->commande.creerElection.dateFin, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             printf("Entrez le statut de l'élection (active/closed/canceled): ");
             fgets(cmd->commande.creerElection.status, sizeof(cmd->commande.creerElection.status), stdin);
+            cmd->commande.creerElection.status[strcspn(cmd->commande.creerElection.status, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             break;
         case 2: // Lire Election
             cmd->type = LIRE_ELECTION;
             printf("Entrez l'identifiant de l'élection à lire: ");
             fgets(cmd->commande.lireElection.identifiant, ENTITY_ID_SIZE, stdin);
+            cmd->commande.lireElection.identifiant[strcspn(cmd->commande.lireElection.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             break;
         case 3: // Modifier Election
             cmd->type = MODIFIER_ELECTION;
             printf("Entrez l'identifiant de l'élection à modifier: ");
             fgets(cmd->commande.modifierElection.identifiant, ENTITY_ID_SIZE, stdin);
+            cmd->commande.modifierElection.identifiant[strcspn(cmd->commande.modifierElection.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             printf("Entrez la nouvelle question de l'élection: ");
             fgets(cmd->commande.modifierElection.nouvelleQuestion, ENTITY_ID_SIZE, stdin);
+            cmd->commande.modifierElection.nouvelleQuestion[strcspn(cmd->commande.modifierElection.nouvelleQuestion, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             break;
-
         case 4: // Supprimer Election
             cmd->type = SUPPRIMER_ELECTION;
             printf("Entrez l'identifiant de l'élection à supprimer: ");
             fgets(cmd->commande.supprimerElection.identifiant, ENTITY_ID_SIZE, stdin);
+            cmd->commande.supprimerElection.identifiant[strcspn(cmd->commande.supprimerElection.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             break;
-
         case 5: // Retour au menu principal
             free(cmd);
             return;
@@ -128,23 +140,23 @@ void handleVoteCRUD(int choix) {
             cmd->type = CREER_VOTE;
             printf("Entrez le numéroID de l'électeur votant: ");
             fgets(cmd->commande.creerVote.numeroID, ENTITY_ID_SIZE, stdin);
-
+            cmd->commande.creerVote.numeroID[strcspn(cmd->commande.creerVote.numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             printf("Entrez l'identifiant de l'élection pour le vote: ");
             fgets(cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE, stdin);
-
-            // Afficher la question de l'élection
-            int idElection = Election_getIdFromNumeroID(db, cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE);
-            afficheQuestionVote(db, idElection);
-
+            cmd->commande.creerVote.identifiant[strcspn(cmd->commande.creerVote.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
+            // La ligne suivante est commentée car elle nécessite l'accès à la base de données, ce qui n'est pas géré dans cet extrait de code.
+            // int idElection = Election_getIdFromNumeroID(db, cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE);
+            // afficheQuestionVote(db, idElection);
             printf("Entrez le choix du vote: ");
             fgets(cmd->commande.creerVote.ballot, 256, stdin);
-
+            cmd->commande.creerVote.ballot[strcspn(cmd->commande.creerVote.ballot, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             enqueueCommand(cmd);
             break;
         case 2: // Lire les résultats des votes
             cmd->type = LIRE_VOTE;
             printf("Entrez l'ID de l'élection pour voir les résultats: ");
             fgets(cmd->commande.lireVote.identifiant, ENTITY_ID_SIZE, stdin);
+            cmd->commande.lireVote.identifiant[strcspn(cmd->commande.lireVote.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             enqueueCommand(cmd);
             break;
         case 3: // Retour au menu principal
@@ -168,7 +180,7 @@ void* receiveCommands(void* arg) {
         printf("2. Election\n");
         printf("3. Vote\n");
         printf("4. Quitter\n");
-        printf("Votre choix: \n");
+        printf("Votre choix: ");
         fgets(buffer, sizeof(buffer), stdin);
         choixPrincipal = atoi(buffer);
 
@@ -222,12 +234,10 @@ void* receiveCommands(void* arg) {
 }
 
 int main(int argc, char *argv[]) {
-
     pthread_t threadReceiver, threadProcessor;
 
     // Initialisation de la base de données
     const char *dbPath = "../data_base/base_de_donnees.db";
-
 
     // Ouvrir ou créer la base de données si elle n'existe pas
     db = database_open(dbPath);

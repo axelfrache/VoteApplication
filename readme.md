@@ -200,7 +200,7 @@ cd ../build
 ./nom_du_test
 ```
 
-Voici la liste de toutles tests disponibles :
+Voici la liste de tout les tests disponibles :
 
 ![imageListeTestDisponible.png](imgREADME%2FimageListeTestDisponible.png)
 
@@ -210,6 +210,7 @@ Voici la liste de toutles tests disponibles :
 - Nous avons enlevé la responsabilité de spécifié la base de données lorsque l'on lance l'executable afin de donner le moins de responsabilité à l'utilisateur.
 - Notre choix de cryptographie est de chiffrer les votes lors de l'ajout d'un vote et de les déchiffrer lors de la consultation des résultats d'un vote a été réfléchie.
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Tests de toutes les commandes
 
@@ -217,34 +218,90 @@ Cette partie présente via des captures d'écran l'utilisation de toutes les com
 
 ### Tests des commandes des électeurs
 
-#### Creation d'un électeur
-
-
-
 #### Test de la commande de création d'un électeur
+
+![image_CREATE_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_CREATE_Electeur.png)
 
 #### Test de la commande de lecture des informations d'un électeur
 
+![image_READ_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_READ_Electeur.png)
+
 #### Test de la commande de mise à jour des informations d'un électeur
 
+![image_UPDATE_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_UPDATE_Electeur.png)
+
 #### Test de la commande de suppression d'un électeur
+
+![image_DELETE_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_DELETE_Electeur.png)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 ### Tests des commandes des élections
 
 #### Test de la commande de création d'une élection
 
+![image_CREATE_Election.png](imgREADME%2FimagesCommandesElection%2Fimage_CREATE_Election.png)
+
 #### Test de la commande de lecture des informations d'une élection
+
+![image_READ_Election.png](imgREADME%2FimagesCommandesElection%2Fimage_READ_Election.png)
 
 #### Test de la commande de mise à jour des informations d'une élection
 
+![image_UPDATE_Election.png](imgREADME%2FimagesCommandesElection%2Fimage_UPDATE_Election.png)
+
+Après avoir mis à jour les informations de l'élection, nous pouvons voir que les informations ont bien été mises à jour :
+
+![image_READ_Election_ApresUPDATE.png](imgREADME%2FimagesCommandesElection%2Fimage_READ_Election_ApresUPDATE.png)
+
 #### Test de la commande de suppression d'une élection
+
+![image_DELETE_Election.png](imgREADME%2FimagesCommandesElection%2Fimage_DELETE_Election.png)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 ### Tests des commandes des votes
 
 #### Test de la commande d'enregistrement d'un vote
 
+![image_CREATE_Vote.png](imgREADME%2FimagesCommandesVote%2Fimage_CREATE_Vote.png)
+
 #### Test de la commande de consultation des résultats d'un vote
 
+![image_READ_Vote.png](imgREADME%2FimagesCommandesVote%2Fimage_READ_Vote.png)
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+## Tests Unitaires
 
+Cette partie présente via des captures d'écran l'utilisation de tous les tests unitaires.
+
+### Tests unitaires des CRUD
+
+#### Test unitaire du CRUD des électeurs
+
+![image_test_CRUD_Electeur.png](imgREADME%2FimagesTestElecteur%2Fimage_test_CRUD_Electeur.png)
+
+#### Test unitaire du CRUD des élections
+
+![image_test_CRUD_Election.png](imgREADME%2FimagesTestElection%2Fimage_test_CRUD_Election.png)
+
+#### Test unitaire du CRUD des votes
+
+![image_test_CRUD.png](imgREADME%2FimagesTestVote%2Fimage_test_CRUD.png)
+
+### Tests unitaires des fonctions de la BD
+
+#### Test unitaire des fonctions de la BD des électeurs
+
+![image_test_BD_Electeur.png](imgREADME%2FimagesTestElecteur%2Fimage_test_BD_Electeur.png)
+
+#### Test unitaire des fonctions de la BD des élections
+
+![image_test_BD_Election.png](imgREADME%2FimagesTestElection%2Fimage_test_BD_Election.png)
+
+#### Test unitaire des fonctions de la BD des votes
+
+![image_test_BD_Vote.png](imgREADME%2FimagesTestVote%2Fimage_test_BD_Vote.png)

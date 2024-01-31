@@ -8,7 +8,7 @@
 
 extern void enqueueCommand(Commande*);
 extern void* processCommands(void* arg);
-
+sqlite3 *db;
 
 void handleElecteurCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
@@ -132,6 +132,10 @@ void handleVoteCRUD(int choix) {
             printf("Entrez l'identifiant de l'élection pour le vote: ");
             fgets(cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE, stdin);
 
+            // Afficher la question de l'élection
+            int idElection = Election_getIdFromNumeroID(db, cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE);
+            afficheQuestionVote(db, idElection);
+
             printf("Entrez le choix du vote: ");
             fgets(cmd->commande.creerVote.ballot, 256, stdin);
 
@@ -223,7 +227,7 @@ int main(int argc, char *argv[]) {
 
     // Initialisation de la base de données
     const char *dbPath = "../data_base/base_de_donnees.db";
-    sqlite3 *db;
+
 
     // Ouvrir ou créer la base de données si elle n'existe pas
     db = database_open(dbPath);

@@ -296,8 +296,11 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
     int idElection = Election_getIdFromNumeroID(db,cmd->identifiant, ENTITY_ID_SIZE);
 
     //Affchage des valeurs récupérées
-    printf("idVotant : %d\n", idVotant);
-    printf("idElection : %d\n", idElection);
+    //printf("idVotant : %d\n", idVotant);
+    //printf("idElection : %d\n", idElection);
+
+    // Affiche la question de l'élection
+
 
 
     if (cmd == NULL || idElection < 1 || idVotant < 1) {

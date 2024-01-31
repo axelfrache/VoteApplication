@@ -33,6 +33,7 @@ int electionExists(sqlite3 *db, const char *identifiant, int size);
 // usecase vote
 void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *choix, mpz_t n, mpz_t g);
 void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, mpz_t n);
+void afficheQuestionVote(sqlite3 *db, int idElection);
 
 int hasUserAlreadyVoted(sqlite3 *db, int idVotant, int idElection);
 

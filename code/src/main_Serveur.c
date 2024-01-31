@@ -141,17 +141,27 @@ void handleVoteCRUD(int choix) {
             printf("Entrez le numéroID de l'électeur votant: ");
             fgets(cmd->commande.creerVote.numeroID, ENTITY_ID_SIZE, stdin);
             cmd->commande.creerVote.numeroID[strcspn(cmd->commande.creerVote.numeroID, "\n")] = 0; // Supprime le caractère de nouvelle ligne
+
             printf("Entrez l'identifiant de l'élection pour le vote: ");
             fgets(cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE, stdin);
             cmd->commande.creerVote.identifiant[strcspn(cmd->commande.creerVote.identifiant, "\n")] = 0; // Supprime le caractère de nouvelle ligne
-            // La ligne suivante est commentée car elle nécessite l'accès à la base de données, ce qui n'est pas géré dans cet extrait de code.
-            // int idElection = Election_getIdFromNumeroID(db, cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE);
-            // afficheQuestionVote(db, idElection);
+
+            // Récupération de l'idElection à partir de l'identifiant
+            int idElection = Election_getIdFromNumeroID(db, cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE);
+            if (idElection > 0) {
+                // Afficher la question de l'élection
+                afficheQuestionVote(db, idElection);
+            } else {
+                printf("L'élection spécifiée n'existe pas.\n");
+                break; // Sortie précoce si l'élection n'existe pas
+            }
+
             printf("Entrez le choix du vote: ");
             fgets(cmd->commande.creerVote.ballot, 256, stdin);
             cmd->commande.creerVote.ballot[strcspn(cmd->commande.creerVote.ballot, "\n")] = 0; // Supprime le caractère de nouvelle ligne
             enqueueCommand(cmd);
             break;
+
         case 2: // Lire les résultats des votes
             cmd->type = LIRE_VOTE;
             printf("Entrez l'ID de l'élection pour voir les résultats: ");

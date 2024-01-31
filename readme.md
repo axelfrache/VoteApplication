@@ -222,6 +222,8 @@ Cette partie présente via des captures d'écran l'utilisation de toutes les com
 
 ![image_CREATE_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_CREATE_Electeur.png)
 
+On peut appercevoir que l'électeur a bien été créé dans la base de données dans la capture d'écran ci-dessus.
+
 #### Test de la commande de lecture des informations d'un électeur
 
 ![image_READ_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_READ_Electeur.png)
@@ -230,9 +232,15 @@ Cette partie présente via des captures d'écran l'utilisation de toutes les com
 
 ![image_UPDATE_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_UPDATE_Electeur.png)
 
+Après avoir mis à jour les informations de l'électeur, nous pouvons voir que les informations ont bien été mises à jour :
+
+![image_READ_Electeur_Apres_UPDATE.png](imgREADME%2FimagesCommandesElecteur%2Fimage_READ_Electeur_Apres_UPDATE.png)
+
 #### Test de la commande de suppression d'un électeur
 
 ![image_DELETE_Electeur.png](imgREADME%2FimagesCommandesElecteur%2Fimage_DELETE_Electeur.png)
+
+On peut appercevoir que l'électeur a bien été supprimé de la base de données dans la capture d'écran ci-dessus.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -258,6 +266,8 @@ Après avoir mis à jour les informations de l'élection, nous pouvons voir que 
 #### Test de la commande de suppression d'une élection
 
 ![image_DELETE_Election.png](imgREADME%2FimagesCommandesElection%2Fimage_DELETE_Election.png)
+
+On peut appercevoir que l'élection a bien été supprimée de la base de données dans la capture d'écran ci-dessus.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

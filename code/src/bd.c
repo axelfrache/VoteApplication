@@ -447,3 +447,28 @@ int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
 
     return id;
 }
+
+int Electeur_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
+{
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT id FROM Electeur WHERE numeroID = ?;";
+    int id = -1; // Valeur par défaut si l'ID n'est pas trouvé
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            id = sqlite3_column_int(stmt, 0); // Récupère l'ID de la première colonne
+        }
+
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+
+    return id;
+}

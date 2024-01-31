@@ -60,7 +60,7 @@ Commande *dequeueCommand() {
  */
 void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
     printf("Traitement AjoutElecteurCmd\n");
-    if (cmd == NULL || cmd->identifiant[0] == '\0') {
+    if (cmd == NULL || cmd->numeroID[0] == '\0') {
         printf("Commande invalide ou identifiant manquant.\n");
         return;
     }
@@ -72,10 +72,10 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
     }
 
     // Avant d'insérer un électeur, vérifiez s'il existe déjà
-    if (electeurExists(db, cmd->identifiant, ENTITY_ID_SIZE) != 0) {
-        printf("L'électeur avec l'identifiant %s existe déjà.\n", cmd->identifiant);
+    if (electeurExists(db, cmd->numeroID, ENTITY_ID_SIZE) != 0) {
+        printf("L'électeur avec le numeroID %s existe déjà.\n", cmd->numeroID);
     } else {
-        createElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
+        createElecteur(db, cmd->numeroID, ENTITY_ID_SIZE);
     }
     // Fermer la base de données
     sqlite3_close(db);
@@ -83,8 +83,8 @@ void traitementCreerElecteur(AjoutElecteurCmd *cmd) {
 
 void traitementLireElecteur(LireElecteurCmd *cmd) {
     printf("Traitement LireElecteurCmd\n");
-    if (cmd == NULL || cmd->identifiant[0] == '\0') {
-        printf("Commande invalide ou identifiant manquant.\n");
+    if (cmd == NULL || cmd->numeroID[0] == '\0') {
+        printf("Commande invalide ou numeroID manquant.\n");
         return;
     }
 
@@ -95,12 +95,12 @@ void traitementLireElecteur(LireElecteurCmd *cmd) {
     }
 
     // Vérifie si l'électeur existe dans la base de données
-    if (electeurExists(db, cmd->identifiant, ENTITY_ID_SIZE)) {
+    if (electeurExists(db, cmd->numeroID, ENTITY_ID_SIZE)) {
         // Si l'électeur existe, procède à la lecture de ses informations
-        readElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
+        readElecteur(db, cmd->numeroID, ENTITY_ID_SIZE);
     } else {
         // Si l'électeur n'existe pas, affiche un message d'erreur
-        printf("L'électeur avec l'identifiant spécifié n'existe pas dans la base de données.\n");
+        printf("L'électeur avec le numeroID spécifié n'existe pas dans la base de données.\n");
     }
 
     sqlite3_close(db);
@@ -109,8 +109,8 @@ void traitementLireElecteur(LireElecteurCmd *cmd) {
 void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
     printf("Traitement ModifierElecteurCmd\n");
 
-    if (cmd == NULL || cmd->ancienIdentifiant[0] == '\0' || cmd->nouvelIdentifiant[0] == '\0') {
-        printf("Commande invalide, identifiant manquant ou nouvel identifiant manquant.\n");
+    if (cmd == NULL || cmd->ancienNumeroID[0] == '\0' || cmd->nouvelNumeroID[0] == '\0') {
+        printf("Commande invalide, numeroID manquant ou nouvel numeroID manquant.\n");
         return;
     }
 
@@ -120,11 +120,11 @@ void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
         return;
     }
 
-    if (!electeurExists(db, cmd->ancienIdentifiant, ENTITY_ID_SIZE)) {
-        printf("L'électeur avec l'identifiant '%s' n'existe pas.\n", cmd->ancienIdentifiant);
+    if (!electeurExists(db, cmd->ancienNumeroID, ENTITY_ID_SIZE)) {
+        printf("L'électeur avec le numeroID '%s' n'existe pas.\n", cmd->ancienNumeroID);
     } else {
         // Procède directement à la mise à jour sans demander de confirmation
-        updateElecteur(db, cmd->ancienIdentifiant, ENTITY_ID_SIZE, cmd->nouvelIdentifiant, ENTITY_ID_SIZE);
+        updateElecteur(db, cmd->ancienNumeroID, ENTITY_ID_SIZE, cmd->ancienNumeroID, ENTITY_ID_SIZE);
     }
 
     sqlite3_close(db);
@@ -133,8 +133,8 @@ void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
 
 void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
     printf("Traitement SupprimeElecteurCmd\n");
-    if (cmd == NULL || cmd->identifiant[0] == '\0') {
-        printf("Commande invalide ou identifiant manquant.\n");
+    if (cmd == NULL || cmd->numeroID[0] == '\0') {
+        printf("Commande invalide ou numeroID manquant.\n");
         return;
     }
     sqlite3 *db;
@@ -144,11 +144,11 @@ void traitementSupprimerElecteur(SupprimeElecteurCmd *cmd) {
     }
 
     // Vérifie si l'électeur existe avant de tenter de le supprimer
-    if (!electeurExists(db, cmd->identifiant, ENTITY_ID_SIZE)) {
-        printf("L'électeur avec l'identifiant '%s' n'existe pas.\n", cmd->identifiant);
+    if (!electeurExists(db, cmd->numeroID, ENTITY_ID_SIZE)) {
+        printf("L'électeur avec le numeroID '%s' n'existe pas.\n", cmd->numeroID);
     } else {
         // Appeler deleteElecteur pour supprimer l'électeur
-        deleteElecteur(db, cmd->identifiant, ENTITY_ID_SIZE);
+        deleteElecteur(db, cmd->numeroID, ENTITY_ID_SIZE);
     }
 
     sqlite3_close(db);
@@ -256,9 +256,6 @@ void traitementSupprimerElection(SupprimerElectionCmd *cmd) {
         fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
         return;
     }
-
-
-
     // Vérification de l'existence de l'élection avant de supprimer
     if (!electionExists(db, cmd->identifiant, ENTITY_ID_SIZE)) {
         printf("L'élection avec l'identifiant '%s' n'existe pas.\n", cmd->identifiant);
@@ -280,7 +277,26 @@ void traitementSupprimerElection(SupprimerElectionCmd *cmd) {
 void traitementCreerVote(CreerVoteCmd *cmd) {
     printf("Traitement CreerVoteCmd\n");
 
-    if (cmd == NULL || cmd->idElection < 1 || cmd->idVotant < 1) {
+    // Générer les clés publiques et privées (n, g, lambda, mu)
+    generate_keys(n, lambda, g, mu);  // Utilise la fonction fournie pour générer les clés
+
+    sqlite3 *db;
+    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
+        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
+        mpz_clears(n, g, lambda, mu, NULL);  // Libérer les ressources GMP
+        return;
+    }
+
+    // Récupéré l'id d'électeur avec l'identifiant
+    int idVotant = Electeur_getIdFromNumeroID(&db, cmd->numeroID, ENTITY_ID_SIZE);
+    int idElection = Election_getIdFromNumeroID(&db,cmd->identifiant, ENTITY_ID_SIZE);
+
+    //Affchage des valeurs récupérées
+    printf("idVotant : %d\n", idVotant);
+    printf("idElection : %d\n", idElection);
+
+
+    /*if (cmd == NULL || cmd->idElection < 1 || cmd->idVotant < 1) {
         printf("Commande invalide ou données manquantes pour le vote.\n");
         return;
     }
@@ -289,16 +305,10 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
     mpz_t n, g, lambda, mu;
     mpz_inits(n, g, lambda, mu, NULL);
 
-    // Générer les clés publiques et privées (n, g, lambda, mu)
-    generate_keys(n, lambda, g, mu);  // Utilise la fonction fournie pour générer les clés
+
 
     // Ouvre la base de données
-    sqlite3 *db;
-    if (sqlite3_open("../data_base/base_de_donnees.db", &db) != SQLITE_OK) {
-        fprintf(stderr, "Erreur lors de l'ouverture de la base de données: %s\n", sqlite3_errmsg(db));
-        mpz_clears(n, g, lambda, mu, NULL);  // Libérer les ressources GMP
-        return;
-    }
+
 
     // Vérification si l'utilisateur a déjà voté
     if (hasUserAlreadyVoted(db, cmd->idVotant, cmd->idElection)) {
@@ -310,7 +320,7 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
 
     // Libération des ressources GMP et de la base de données
     mpz_clears(n, g, lambda, mu, NULL);
-    sqlite3_close(db);
+    sqlite3_close(db);*/
 }
 
 void traitementLireVote(LireVoteCmd *cmd) {

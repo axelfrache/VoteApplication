@@ -20,23 +20,23 @@ typedef enum {
 
 // Structure de commande pour ajouter un électeur
 typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
 
 // Structure de commande pour lire un électeur
 typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 } LireElecteurCmd;
 
 // Structure de commande pour modifier un électeur
 typedef struct {
-    char ancienIdentifiant[ENTITY_ID_SIZE];
-    char nouvelIdentifiant[ENTITY_ID_SIZE];
+    char ancienNumeroID[ENTITY_ID_SIZE];
+    char nouvelNumeroID[ENTITY_ID_SIZE];
 } ModifierElecteurCmd;
 
 // Structure de commande pour supprimer un électeur
 typedef struct {
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 } SupprimeElecteurCmd;
 
 // Structure de commande pour vérifier la présence d'un électeur
@@ -73,8 +73,8 @@ typedef struct {
 
 // Structure de commande pour créer un vote
 typedef struct {
-    int idElection;
-    int idVotant;
+    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
     char ballot[256];
     char hashValidation[256];
 } CreerVoteCmd;

@@ -12,7 +12,7 @@ extern void* processCommands(void* arg);
 
 void handleElecteurCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 
     if (!cmd) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");
@@ -24,29 +24,29 @@ void handleElecteurCRUD(int choix) {
         case 1: // Ajouter Electeur
             cmd->type = AJOUT_ELECTEUR;
             printf("Entrez l'identifiant de l'électeur à ajouter: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.ajoutElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 2: // Lire Electeur
             cmd->type = LIRE_ELECTEUR;
             printf("Entrez l'identifiant de l'électeur à lire: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.lireElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.lireElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 3: // Modifier Electeur
             cmd->type = MODIFIER_ELECTEUR;
             printf("Entrez l'ancien identifiant de l'électeur à modifier: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.modifierElecteur.ancienIdentifiant, identifiant, ENTITY_ID_SIZE-1);
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
             printf("Entrez le nouvel identifiant de l'électeur: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.modifierElecteur.nouvelIdentifiant, identifiant, ENTITY_ID_SIZE-1);
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
          break;
         case 4: // Supprimer Electeur
             cmd->type = SUPPRIME_ELECTEUR;
             printf("Entrez l'identifiant de l'électeur à supprimer: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.supprimeElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.supprimeElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 5: // Retour au menu principal
             free(cmd);
@@ -126,12 +126,12 @@ void handleVoteCRUD(int choix) {
     switch (choix) {
         case 1: // Créer Vote
             cmd->type = CREER_VOTE;
-            printf("Entrez l'ID de l'électeur votant: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.creerVote.idVotant = atoi(buffer);
-            printf("Entrez l'ID de l'élection pour le vote: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.creerVote.idElection = atoi(buffer);
+            printf("Entrez le numéroID de l'électeur votant: ");
+            fgets(cmd->commande.creerVote.numeroID, ENTITY_ID_SIZE, stdin);
+
+            printf("Entrez l'identifiant de l'élection pour le vote: ");
+            fgets(cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE, stdin);
+
             enqueueCommand(cmd);
             break;
         case 2: // Lire les résultats des votes

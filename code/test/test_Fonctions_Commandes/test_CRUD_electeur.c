@@ -77,27 +77,27 @@ int main(int argc, char *argv[]) {
     }
 
     afficherSeparateurTest("Test de création d'électeur");
-    AjoutElecteurCmd ajoutCmd = {.identifiant = "ELECTEUR123"};
+    AjoutElecteurCmd ajoutCmd = {.numeroID = "ELECTEUR123"};
     traitementCreerElecteur(&ajoutCmd);
-    afficherResultatTest("Création d'un nouvel électeur", electeurExists(db, ajoutCmd.identifiant, ENTITY_ID_SIZE));
+    afficherResultatTest("Création d'un nouvel électeur", electeurExists(db, ajoutCmd.numeroID, ENTITY_ID_SIZE));
 
     afficherSeparateurTest("Test de création d'électeur existant");
     traitementCreerElecteur(&ajoutCmd);
-    afficherResultatTest("Tentative de création d'un électeur existant", !electeurExists(db, ajoutCmd.identifiant, ENTITY_ID_SIZE + 1));
+    afficherResultatTest("Tentative de création d'un électeur existant", !electeurExists(db, ajoutCmd.numeroID, ENTITY_ID_SIZE + 1));
 
     afficherSeparateurTest("Test de lecture d'électeur");
-    LireElecteurCmd lireCmd = {.identifiant = "ELECTEUR123"};
+    LireElecteurCmd lireCmd = {.numeroID = "ELECTEUR123"};
     traitementLireElecteur(&lireCmd);
 
     afficherSeparateurTest("Test de modification d'électeur");
-    ModifierElecteurCmd modifierCmd = {.ancienIdentifiant = "ELECTEUR123", .nouvelIdentifiant = "ELECTEUR456"};
+    ModifierElecteurCmd modifierCmd = {.ancienNumeroID = "ELECTEUR123", .nouvelNumeroID = "ELECTEUR456"};
     traitementModifierElecteur(&modifierCmd);
-    afficherResultatTest("Modification d'un électeur", electeurExists(db, modifierCmd.nouvelIdentifiant, ENTITY_ID_SIZE));
+    afficherResultatTest("Modification d'un électeur", electeurExists(db, modifierCmd.nouvelNumeroID, ENTITY_ID_SIZE));
 
     afficherSeparateurTest("Test de suppression d'électeur");
-    SupprimeElecteurCmd supprimerCmd = {.identifiant = "ELECTEUR456"};
+    SupprimeElecteurCmd supprimerCmd = {.numeroID = "ELECTEUR456"};
     traitementSupprimerElecteur(&supprimerCmd);
-    afficherResultatTest("Suppression d'un électeur", !electeurExists(db, supprimerCmd.identifiant, ENTITY_ID_SIZE));
+    afficherResultatTest("Suppression d'un électeur", !electeurExists(db, supprimerCmd.numeroID, ENTITY_ID_SIZE));
 
     // Fermeture de la base de données
     sqlite3_close(db);

@@ -178,17 +178,17 @@ Voici par example les commandes représentant les cas d'utilisation pour la gest
 
 typedef struct
 {
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 } AjoutElecteurCmd;
 
 typedef struct
 {
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 } SupprimeElecteurCmd;
 
 typedef struct
 {
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 } EstPresentCmd;
 
 typedef enum
@@ -252,7 +252,7 @@ switch (cmd.type) {
 \begin{tikzpicture}
 \umlclass{Election}{
 
-- identifiant : char[256] \\
+- numeroID : char[256] \\
 - question : char[256] \\
 - dateDebut : Date \\
 - dateFin : Date \\
@@ -277,13 +277,13 @@ Notre système repose sur les objets décrits par les diagrames UML ci-dessus. I
 
 L'objet `Electeur` représente une entité participant au processus de vote. Chaque électeur est caractérisé par :
 
-- **numeroID** : Un identifiant unique pour chaque électeur, représenté sous forme d'une chaîne de caractères de 256 caractères maximum. Cet identifiant peut être utilisé pour authentifier l'électeur dans le système de vote.
+- **numeroID** : Un numeroID unique pour chaque électeur, représenté sous forme d'une chaîne de caractères de 256 caractères maximum. Cet numeroID peut être utilisé pour authentifier l'électeur dans le système de vote.
 
 ### Election
 
 L'objet `Election` représente un événement de vote spécifique. Chaque élection est définie par :
 
-- **identifiant** : Un identifiant unique pour l'élection, sous forme d'une chaîne de 256 caractères. Cet identifiant sert à distinguer chaque élection des autres.
+- **numeroID** : Un numeroID unique pour l'élection, sous forme d'une chaîne de 256 caractères. Cet numeroID sert à distinguer chaque élection des autres.
 - **question** : La question ou la proposition soumise au vote, limitée à 256 caractères. Cela définit le sujet ou la décision sur laquelle les électeurs doivent voter. Nous allons pour l'instant considérer que des questions à choix binaire (oui/non)
 - **dateDebut** : La date et l'heure de début de l'élection. Cela indique quand les électeurs peuvent commencer à voter.
 - **dateFin** : La date et l'heure de fin de l'élection. Cela indique quand le vote se termine et aucune autre soumission de vote n'est acceptée.
@@ -293,8 +293,8 @@ L'objet `Election` représente un événement de vote spécifique. Chaque élect
 
 L'objet `Vote` représente l'action de voter d'un électeur dans une élection spécifique. Chaque vote est caractérisé par :
 
-- **idVotant** : L'identifiant de l'électeur qui a voté, correspondant à son `numeroID` dans l'objet `Electeur`.
-- **idElection** : L'identifiant de l'élection dans laquelle le vote a été effectué, correspondant à l'`identifiant` dans l'objet `Election`.
+- **idVotant** : L'numeroID de l'électeur qui a voté, correspondant à son `numeroID` dans l'objet `Electeur`.
+- **idElection** : L'numeroID de l'élection dans laquelle le vote a été effectué, correspondant à l'`numeroID` dans l'objet `Election`.
 - **timestamp** : La date et l'heure exactes à laquelle le vote a été soumis. Cela permet de suivre quand chaque vote a été effectué.
 - **bulletin** : Le choix ou la réponse donnée par l'électeur, représentée sous forme d'une chaîne de 256 caractères. Cela peut être, par exemple, un choix parmi plusieurs options ou un oui/non. Pour notre système le choix sera écrit en claire, mais nous prévoyons que le choix soit crypté pour garantir l'anonymat du vote.
 - **hashValidation** : Un hash ou une signature numérique utilisée pour valider l'intégrité et l'authenticité du vote. Cela assure que le vote n'a pas été altéré après sa soumission.
@@ -309,13 +309,13 @@ Voici une description des tables `Electeur`, `Election`, et `Vote` basées sur n
 
 ### Table `Electeur`
 
-- **id** (INTEGER, PRIMARY KEY) : Un identifiant unique pour chaque électeur.
-- **numeroID** (BLOB) : Un identifiant sous forme de BLOB, probablement utilisé pour stocker des informations cryptées ou binaires.
+- **id** (INTEGER, PRIMARY KEY) : Un numeroID unique pour chaque électeur.
+- **numeroID** (BLOB) : Un numeroID sous forme de BLOB, probablement utilisé pour stocker des informations cryptées ou binaires.
 
 ### Table `Election`
 
-- **id** (INTEGER, PRIMARY KEY) : Un identifiant unique pour chaque élection.
-- **identifiant** (BLOB) : Un identifiant sous forme de BLOB pour l'élection.
+- **id** (INTEGER, PRIMARY KEY) : Un numeroID unique pour chaque élection.
+- **numeroID** (BLOB) : Un numeroID sous forme de BLOB pour l'élection.
 - **question** (TEXT, CHECK(length(question) <= 256)) : La question ou le sujet de l'élection, avec une longueur maximale de 256 caractères.
 - **dateDebut** (TEXT) : La date de début de l'élection.
 - **dateFin** (TEXT) : La date de fin de l'élection.
@@ -323,9 +323,9 @@ Voici une description des tables `Electeur`, `Election`, et `Vote` basées sur n
 
 ### Table `Vote`
 
-- **id** (INTEGER, PRIMARY KEY) : Un identifiant unique pour chaque vote.
-- **idVotant** (INTEGER) : L'identifiant de l'électeur qui a voté, faisant référence à la table `Electeur`.
-- **idElection** (INTEGER) : L'identifiant de l'élection dans laquelle le vote a été effectué, faisant référence à la table `Election`.
+- **id** (INTEGER, PRIMARY KEY) : Un numeroID unique pour chaque vote.
+- **idVotant** (INTEGER) : L'numeroID de l'électeur qui a voté, faisant référence à la table `Electeur`.
+- **idElection** (INTEGER) : L'numeroID de l'élection dans laquelle le vote a été effectué, faisant référence à la table `Election`.
 - **timestamp** (TEXT) : La date et l'heure du vote.
 - **ballot** (BLOB) : Le bulletin de vote sous forme de BLOB.
 - **hashValidation** (TEXT, CHECK(length(hashValidation) <= 256)) : Un hash pour la validation du vote, avec une longueur maximale de 256 caractères.

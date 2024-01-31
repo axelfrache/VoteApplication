@@ -22,6 +22,8 @@ int getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
 void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char *question, const char *dateDebut, const char *dateFin, const char *status);
 void readElectionByIdentifiant(sqlite3 *db, const char *identifiant, int size);
 void updateElectionByIdentifiant(sqlite3 *db, const char *identifiant, int sizeId, const char *newQuestion);
+int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
+
 
 void deleteElectionByIdentifiant(sqlite3 *db, const char *identifiant, int identifiantSize);
 

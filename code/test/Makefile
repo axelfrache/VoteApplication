@@ -33,7 +33,7 @@ $(BUILDDIR)/test_CRUD_vote: $(TESTFONCTIONSCOMMANDESDIR)/test_CRUD_vote.c
 $(BUILDDIR)/test_crypto: $(TESTLIBRAIRIEDIR)/test_crypto.c
 	$(CC) $< $(CFLAGS) $(PROJECTLIBDIR) $(PROJECTLIB) $(LIBS) -o $@
 
-$(BUILDDIR)/test_sqlite: $(TESTLIBRAIRIEDIR)/test_sqlite.c
+$(BUILDDIR)/test_sqlite: $(TESTLIBRAIRIEDIR)/testsqlite.c
 	$(CC) $< $(CFLAGS) $(PROJECTLIBDIR) $(PROJECTLIB) $(LIBS) -o $@
 
 clean:

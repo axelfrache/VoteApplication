@@ -210,3 +210,34 @@ Voici la liste de toutles tests disponibles :
 - Notre choix de cryptographie est de chiffrer les votes lors de l'ajout d'un vote et de les déchiffrer lors de la consultation des résultats d'un vote a été réfléchie.
 
 
+## Tests de toutes les commandes
+
+### Tests des commandes des électeurs
+
+#### Test de la commande de création d'un électeur
+
+#### Test de la commande de lecture des informations d'un électeur
+
+#### Test de la commande de mise à jour des informations d'un électeur
+
+#### Test de la commande de suppression d'un électeur
+
+### Tests des commandes des élections
+
+#### Test de la commande de création d'une élection
+
+#### Test de la commande de lecture des informations d'une élection
+
+#### Test de la commande de mise à jour des informations d'une élection
+
+#### Test de la commande de suppression d'une élection
+
+### Tests des commandes des votes
+
+#### Test de la commande d'enregistrement d'un vote
+
+#### Test de la commande de consultation des résultats d'un vote
+
+
+
+

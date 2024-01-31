@@ -86,8 +86,7 @@ void handleElectionCRUD(int choix) {
         case 2: // Lire Election
             cmd->type = LIRE_ELECTION;
             printf("Entrez l'identifiant de l'élection à lire: ");
-            fgets(buffer, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.lireElecteur.identifiant, buffer, ENTITY_ID_SIZE-1);
+            fgets(cmd->commande.lireElection.identifiant, ENTITY_ID_SIZE, stdin);
             break;
         case 3: // Modifier Election
             cmd->type = MODIFIER_ELECTION;
@@ -133,7 +132,6 @@ void handleVoteCRUD(int choix) {
             printf("Entrez l'ID de l'élection pour le vote: ");
             fgets(buffer, sizeof(buffer), stdin);
             cmd->commande.creerVote.idElection = atoi(buffer);
-            // Ici, tu dois saisir et affecter les données du vote (cmd->commande.creerVote.ballot, etc.) selon ton implémentation
             enqueueCommand(cmd);
             break;
         case 2: // Lire les résultats des votes

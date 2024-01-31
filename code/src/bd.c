@@ -423,7 +423,23 @@ int hasUserAlreadyVoted(sqlite3 *db, int idVotant, int idElection) {
     return result > 0;
 }
 
+void afficheQuestionVote(sqlite3 *db, int idElection) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT question FROM Election WHERE id = ?;";
 
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_int(stmt, 1, idElection);
+
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            const char *question = sqlite3_column_text(stmt, 0);
+            printf("Question: %s\n", question);
+        }
+
+        sqlite3_finalize(stmt);
+    } else {
+        printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+}
 
 int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
 {

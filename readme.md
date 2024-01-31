@@ -48,6 +48,7 @@ La logique de programmation de ce système de vote est conçue pour garantir la 
 
 - **Gestion de la base de données** : Le programme gère automatiquement la base de données située dans le dossier "data_base". Il crée la base de données si elle n'existe pas et la charge au démarrage du système, assurant ainsi l'intégrité et la disponibilité des données.
 
+**À chaque lancement d'un test ou de l'applictation, la base données est automatiquement vidé**
 
 - **Tableau circulaire** : Nous utilisons un tableau circulaire pour stocker les commandes dans une file d'attente. Cette structure de données optimise l'utilisation de l'espace mémoire et facilite le traitement séquentiel des commandes sans perte de performance.
 
@@ -65,11 +66,11 @@ Cette architecture permet au système de vote de gérer efficacement un grand no
 
 ## Logique des tests
 
-Concernant les tests nous avons mis en place une stratégie de tests.
+Concernant les tests, nous avons mis en place une stratégie de tests.
 
-Nous avons 3 types de tests répartis dans 3 dossier différents :
+Nous avons 3 types de tests répartis dans 3 dossiers différents :
 
-- **Tests des fonctions de bd.c** : Ces tests ont étaient fournis par le professeur et permettent de tester les fonctions de la base de données.
+- **Tests des fonctions de bd.c** : Ces tests, on était fournis par le professeur et permettent de tester les fonctions de la base de données.
 - **Tests des fonctions de traitement des commandes** : Ces tests permettent de tester les fonctions de traitement des commandes, notamment les CRUD des électeurs, élections et votes.
 - **Tests de libraire** : Ces tests permettent de tester les fonctions de la librairie, notamment les librairies de cryptographie et de base de données.
 
@@ -85,7 +86,7 @@ Nous envisageons également de sécuriser les transmissions de votes pour préve
 
 Le choix d'avoir mis la cryptographie directement côté serveur se justifie pas le fait de maintenant l'intégrité des votes et de ne pas laisser le client générer des clés de chiffrement qu'il pourrait utiliser pour modifier les votes.
 
-De plus si dans le future nous mettons en place des communications clients-serveur avec TLS, les communications seront déjà sécurisées.
+De plus dans le futur, nous mettrons en place des communications clients-serveur avec TLS, les communications seront déjà sécurisées.
 
 ## Patron de Conception
 
@@ -112,7 +113,7 @@ Le projet s'appuie sur le patron de conception Commande, avec les commandes suiv
 
 ### Prérequis
 
-Pour pouvoir utiliser l'application, vous devez avoir installé les paquets suivant : 
+Pour pouvoir utiliser l'application, vous devez avoir installé les paquets suivants : 
 
 - GMP pour la cryptographie des votes
 ````bash
@@ -141,7 +142,7 @@ Cette méthode sera présenté sous forme de menu et de sous-menu.
 
 Dans les menus, seront affichés électeurs, élections et votes. Chacun de ces menus permettra d'accéder à un sous-menu permettant de créer, lire, mettre à jour ou supprimer un élément.
 
-Voici un apperçu du menu et d'un sous-menu :
+Voici un aperçu du menu et d'un sous-menu :
 
 Le menu principal :
 
@@ -151,7 +152,7 @@ Le sous menu des électeurs :
 
 ![imageSousMenuElecteur.png](imgREADME%2FimageSousMenuElecteur.png)
 
-Pour utiliser l'application de cette manière vous devez : 
+Pour utiliser l'application de cette manière, vous devez : 
 
 Vous rendre dans le dossier "**src**" et lancer le fichier make :
 
@@ -167,7 +168,7 @@ cd ../build
 ./main
 ```
 
-Maintenant vous n'avez plus qu'à suivre les instructions du menu.
+Maintenant, vous n'avez plus qu'à suivre les instructions du menu.
 Des affichages vous indiqueront si les commandes ont été exécutées avec succès ou non.
 Ils vous indiqueront également l'état actuel du buffer qui contient les commandes quand il y a une commande qui a été ajoutée traitée ou supprimée.
 
@@ -212,7 +213,13 @@ Voici la liste de toutles tests disponibles :
 
 ## Tests de toutes les commandes
 
+Cette partie présente via des captures d'écran l'utilisation de toutes les commandes.
+
 ### Tests des commandes des électeurs
+
+#### Creation d'un électeur
+
+
 
 #### Test de la commande de création d'un électeur
 

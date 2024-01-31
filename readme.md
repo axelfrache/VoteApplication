@@ -315,3 +315,26 @@ Cette partie présente via des captures d'écran l'utilisation de tous les tests
 #### Test unitaire des fonctions de la BD des votes
 
 ![image_test_BD_Vote.png](imgREADME%2FimagesTestVote%2Fimage_test_BD_Vote.png)
+
+
+#### Implémentations à futur
+
+Ce projet à été une très grande opportunité pour comprendre les projets à grande échelle en C.
+
+Même si le projet à atteint les fonctionnalités minimales , ils existent certaines fonctionnalités, dont notre équipe n'a pas eu l'opportunité d'ajouter.
+
+Comme par exemple:
+
+- Command pattern optimisé
+
+Un Command Pattern qui implemente la fonction execute ainsi que possiblement un receptor. Ce qui permettrait d'eviter une liste infini de else if.
+
+- Hashage de l'ensemble de l'object Vote
+
+Cela permettrait la création optimisé d'un hash de validation. On pourrait même utiliser l'adresse stocké en mémoire pour rendre encore plus uniques les hash generées.
+
+- Implémentation du pojet à une alternative client-serveur
+
+Permettant de servir plusieurs client ayant le même serveur.
+
+- Creation d'une interface pour le client

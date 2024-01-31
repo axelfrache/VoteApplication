@@ -93,13 +93,8 @@ void handleElectionCRUD(int choix) {
             cmd->type = MODIFIER_ELECTION;
             printf("Entrez l'identifiant de l'élection à modifier: ");
             fgets(cmd->commande.modifierElection.identifiant, ENTITY_ID_SIZE, stdin);
-            // Supprimez le caractère de nouvelle ligne si nécessaire
-            cmd->commande.modifierElection.identifiant[strcspn(cmd->commande.modifierElection.identifiant, "\n")] = 0;
-
             printf("Entrez la nouvelle question de l'élection: ");
-            fgets(cmd->commande.modifierElection.nouvelleQuestion, sizeof(cmd->commande.modifierElection.nouvelleQuestion), stdin);
-            // Supprimez le caractère de nouvelle ligne si nécessaire
-            cmd->commande.modifierElection.nouvelleQuestion[strcspn(cmd->commande.modifierElection.nouvelleQuestion, "\n")] = 0;
+            fgets(cmd->commande.modifierElection.nouvelleQuestion, ENTITY_ID_SIZE, stdin);
             break;
 
         case 4: // Supprimer Election

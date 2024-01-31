@@ -253,6 +253,24 @@ void readElectionByIdentifiant(sqlite3 *db, const char *identifiant, int sizeId)
     }
 }
 
+void updateElectionByIdentifiant(sqlite3 *db, const char *identifiant, int sizeId, const char *newQuestion) {
+    sqlite3_stmt *stmt;
+    const char *sql = "UPDATE Election SET question = ? WHERE identifiant = ?;";
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, newQuestion, -1, SQLITE_STATIC);
+        sqlite3_bind_blob(stmt, 2, identifiant, sizeId, SQLITE_STATIC);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            printf("Erreur lors de la mise à jour: %s\n", sqlite3_errmsg(db));
+        } else {
+            printf("Electeur mis à jour avec succès\n");
+        }
+        sqlite3_finalize(stmt);
+    } else {
+        printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+}
+
 
 void deleteElectionByIdentifiant(sqlite3 *db, const char *identifiant, int identifiantSize) {
     sqlite3_stmt *stmt;

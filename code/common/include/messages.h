@@ -47,7 +47,7 @@ typedef struct {
 // Structure de commande pour créer une élection
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
-    char question[256];
+    char question[ENTITY_ID_SIZE];
     char dateDebut[20];
     char dateFin[20];
     char status[10]; // Peut être 'active', 'closed', 'canceled'
@@ -61,23 +61,13 @@ typedef struct {
 // Structure de commande pour modifier une élection
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
-    char nouvelleQuestion[256];
+    char nouvelleQuestion[ENTITY_ID_SIZE];
 } ModifierElectionCmd;
 
 // Structure de commande pour supprimer une élection
 typedef struct {
     char identifiant[ENTITY_ID_SIZE];
 } SupprimerElectionCmd;
-
-
-
-
-
-
-
-
-
-
 
 
 

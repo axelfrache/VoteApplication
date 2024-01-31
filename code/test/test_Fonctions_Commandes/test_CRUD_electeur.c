@@ -88,7 +88,6 @@ int main(int argc, char *argv[]) {
     afficherSeparateurTest("Test de lecture d'électeur");
     LireElecteurCmd lireCmd = {.identifiant = "ELECTEUR123"};
     traitementLireElecteur(&lireCmd);
-    // Ajouter une vérification pour confirmer la lecture de l'électeur
 
     afficherSeparateurTest("Test de modification d'électeur");
     ModifierElecteurCmd modifierCmd = {.ancienIdentifiant = "ELECTEUR123", .nouvelIdentifiant = "ELECTEUR456"};

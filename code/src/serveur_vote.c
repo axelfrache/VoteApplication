@@ -124,7 +124,7 @@ void traitementModifierElecteur(ModifierElecteurCmd *cmd) {
         printf("L'électeur avec le numeroID '%s' n'existe pas.\n", cmd->ancienNumeroID);
     } else {
         // Procède directement à la mise à jour sans demander de confirmation
-        updateElecteur(db, cmd->ancienNumeroID, ENTITY_ID_SIZE, cmd->ancienNumeroID, ENTITY_ID_SIZE);
+        updateElecteur(db, cmd->ancienNumeroID, ENTITY_ID_SIZE, cmd->nouvelNumeroID, ENTITY_ID_SIZE);
     }
 
     sqlite3_close(db);

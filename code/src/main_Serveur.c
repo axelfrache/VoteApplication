@@ -40,7 +40,7 @@ void handleElecteurCRUD(int choix) {
             strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
             printf("Entrez le nouvel numeroID de l'électeur: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
+            strncpy(cmd->commande.modifierElecteur.nouvelNumeroID, numeroID, ENTITY_ID_SIZE-1);
          break;
         case 4: // Supprimer Electeur
             cmd->type = SUPPRIME_ELECTEUR;

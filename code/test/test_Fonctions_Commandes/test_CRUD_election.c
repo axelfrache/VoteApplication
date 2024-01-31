@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             {NULL}};
 
     // Création d'un contexte d'option
-    context = g_option_context_new("- test pour la création de la base de donnée");
+    context = g_option_context_new("- test pour la gestion des élections");
     g_option_context_add_main_entries(context, entries, NULL);
 
     // Analyse des options de ligne de commande
@@ -76,7 +76,23 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    // Début des tests
 
+    afficherSeparateurTest("Test de création d'élection");
+    CreerElectionCmd creerCmd = {.identifiant = "ELECT123", .question = "Question 1?", .dateDebut = "2023-01-01", .dateFin = "2023-12-31", .status = "active"};
+    traitementCreerElection(&creerCmd);
+
+    afficherSeparateurTest("Test de lecture d'élection");
+    LireElectionCmd lireCmd = {.idElection = 1}; // Assurez-vous que cet ID existe ou est correct après la création
+    traitementLireElection(&lireCmd);
+
+    afficherSeparateurTest("Test de modification d'élection");
+    ModifierElectionCmd modifierCmd = {.idElection = 1, .nouvelleQuestion = "Question modifiée?"};
+    traitementModifierElection(&modifierCmd);
+
+    afficherSeparateurTest("Test de suppression d'élection");
+    SupprimerElectionCmd supprimerCmd = {.idElection = 1};
+    traitementSupprimerElection(&supprimerCmd);
 
     // Fermeture de la base de données
     sqlite3_close(db);

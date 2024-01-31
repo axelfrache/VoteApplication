@@ -20,8 +20,12 @@ int getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
 
 // usecases election
 void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char *question, const char *dateDebut, const char *dateFin, const char *status);
-void updateElection(sqlite3 *db, int id, const char *question);
-int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size);
+void readElectionByIdentifiant(sqlite3 *db, const char *identifiant, int size);
+void updateElectionByIdentifiant(sqlite3 *db, const char *identifiant, int size, const char *question);
+void deleteElectionByIdentifiant(sqlite3 *db, const char *identifiant, int identifiantSize);
+
+int electionExists(sqlite3 *db, const char *identifiant, int size);
+
 
 // usecase vote
 void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *choix, mpz_t n, mpz_t g);

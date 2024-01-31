@@ -55,19 +55,31 @@ typedef struct {
 
 // Structure de commande pour lire les détails d'une élection
 typedef struct {
-    int idElection;
+    char identifiant[ENTITY_ID_SIZE];
 } LireElectionCmd;
 
 // Structure de commande pour modifier une élection
 typedef struct {
-    int idElection;
+    char identifiant[ENTITY_ID_SIZE];
     char nouvelleQuestion[256];
 } ModifierElectionCmd;
 
 // Structure de commande pour supprimer une élection
 typedef struct {
-    int idElection;
+    char identifiant[ENTITY_ID_SIZE];
 } SupprimerElectionCmd;
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Structure de commande pour créer un vote
 typedef struct {

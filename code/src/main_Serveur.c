@@ -61,7 +61,7 @@ void handleElecteurCRUD(int choix) {
 
 void handleElectionCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
-    char buffer[1024];
+    char buffer[ENTITY_ID_SIZE];
 
     if (!cmd) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");
@@ -85,24 +85,29 @@ void handleElectionCRUD(int choix) {
             break;
         case 2: // Lire Election
             cmd->type = LIRE_ELECTION;
-            printf("Entrez l'ID de l'élection à lire: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.lireElection.idElection = atoi(buffer);
+            printf("Entrez l'identifiant de l'élection à lire: ");
+            fgets(buffer, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.lireElecteur.identifiant, buffer, ENTITY_ID_SIZE-1);
             break;
         case 3: // Modifier Election
             cmd->type = MODIFIER_ELECTION;
-            printf("Entrez l'ID de l'élection à modifier: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.modifierElection.idElection = atoi(buffer);
+            printf("Entrez l'identifiant de l'élection à modifier: ");
+            fgets(cmd->commande.modifierElection.identifiant, ENTITY_ID_SIZE, stdin);
+            // Supprimez le caractère de nouvelle ligne si nécessaire
+            cmd->commande.modifierElection.identifiant[strcspn(cmd->commande.modifierElection.identifiant, "\n")] = 0;
+
             printf("Entrez la nouvelle question de l'élection: ");
             fgets(cmd->commande.modifierElection.nouvelleQuestion, sizeof(cmd->commande.modifierElection.nouvelleQuestion), stdin);
+            // Supprimez le caractère de nouvelle ligne si nécessaire
+            cmd->commande.modifierElection.nouvelleQuestion[strcspn(cmd->commande.modifierElection.nouvelleQuestion, "\n")] = 0;
             break;
+
         case 4: // Supprimer Election
             cmd->type = SUPPRIMER_ELECTION;
-            printf("Entrez l'ID de l'élection à supprimer: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.supprimerElection.idElection = atoi(buffer);
+            printf("Entrez l'identifiant de l'élection à supprimer: ");
+            fgets(cmd->commande.supprimerElection.identifiant, ENTITY_ID_SIZE, stdin);
             break;
+
         case 5: // Retour au menu principal
             free(cmd);
             return;
@@ -116,7 +121,7 @@ void handleElectionCRUD(int choix) {
 
 void handleVoteCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
-    char buffer[1024];
+    char buffer[ENTITY_ID_SIZE];
 
     if (!cmd) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");

@@ -27,18 +27,15 @@ const char *vote_create = "CREATE TABLE IF NOT EXISTS Vote(id INTEGER PRIMARY KE
     ballot BLOB ,\
     hashValidation TEXT CHECK(length(hashValidation) <= 256) );";
 
-int database_exists(const char *path)
-{
+int database_exists(const char *path) {
     struct stat buffer;
     return (stat(path, &buffer));
 }
 
-sqlite3 *database_open(const char *path)
-{
+sqlite3 *database_open(const char *path) {
     sqlite3 *db = NULL;
     int rc = sqlite3_open(path, &db);
-    if (rc != SQLITE_OK)
-    {
+    if (rc != SQLITE_OK) {
         // Gérer l'erreur
         sqlite3_close(db);
         notif(RED, "Erreur lors de la creation de la BD: %s", sqlite3_errmsg(db));
@@ -47,27 +44,22 @@ sqlite3 *database_open(const char *path)
     return db;
 };
 
-int database_close(sqlite3 *db)
-{
+int database_close(sqlite3 *db) {
     return (sqlite3_close(db) == SQLITE_OK) ? 0 : 1;
 };
 
-int database_init(sqlite3 *db)
-{
+int database_init(sqlite3 *db) {
     printf("database_init\n");
 
     const char *requests[3] = {electeur_create, election_create, vote_create};
     int i;
-    for (i = 0; i < 3; i++)
-    {
+    for (i = 0; i < 3; i++) {
         const char *sql = requests[i];
         char *errMsg = 0;
         int rc = sqlite3_exec(db, sql, 0, 0, &errMsg);
-        if (rc != SQLITE_OK)
-        {
+        if (rc != SQLITE_OK) {
             // Gérer l'erreur
-            if (errMsg)
-            {
+            if (errMsg) {
                 sqlite3_free(errMsg);
             }
             sqlite3_close(db);
@@ -77,287 +69,254 @@ int database_init(sqlite3 *db)
     return 0;
 };
 
-void createElecteur(sqlite3 *db, const char *numeroID, int size)
-{
+// Supprime toutes les tables de la base de données
+int clear_database(sqlite3 *db) {
+    char *errMsg = 0;
+    const char *sql = "DROP TABLE IF EXISTS Electeur; DROP TABLE IF EXISTS Election; DROP TABLE IF EXISTS Vote;";
+
+    int rc = sqlite3_exec(db, sql, 0, 0, &errMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Erreur lors de la suppression des tables: %s\n", errMsg);
+        sqlite3_free(errMsg);
+        return 1;
+    }
+
+    return 0;
+}
+
+void createElecteur(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "INSERT INTO Electeur (numeroID) VALUES (?);";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         const char *data = numeroID;
         // int size = strlen(data) + 1; // +1 pour le caractère nul de fin
 
         sqlite3_bind_blob(stmt, 1, data, size, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             printf("Erreur lors de l'insertion: %s\n", sqlite3_errmsg(db));
-        }
-        else
-        {
+        } else {
             printf("Electeur ajouté avec succès\n");
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-void readElecteur(sqlite3 *db, const char *numeroID, int size)
-{
+void readElecteur(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT * FROM Electeur WHERE numeroID = ?;";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
 
-        while (sqlite3_step(stmt) == SQLITE_ROW)
-        {
-            // Supposons que numeroID est la première colonne
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
             const char *id = sqlite3_column_blob(stmt, 0);
+            const char *numeroID = sqlite3_column_blob(stmt, 1);
             printf("Electeur: %s\n", id);
+            printf("NumeroID: %s\n", numeroID);
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-int electeurExists(sqlite3 *db, const char *numeroID, int size)
-{
+int electeurExists(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT COUNT(*) FROM Electeur WHERE numeroID = ?;";
     int result = 0;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) == SQLITE_ROW)
-        {
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
             result = sqlite3_column_int(stmt, 0) > 0;
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 
     return result;
 }
 
-void updateElecteur(sqlite3 *db, const char *oldNumeroID, int size1, const char *newNumeroID, int size2)
-{
+void updateElecteur(sqlite3 *db, const char *oldNumeroID, int size1, const char *newNumeroID, int size2) {
     sqlite3_stmt *stmt;
     const char *sql = "UPDATE Electeur SET numeroID = ? WHERE numeroID = ?;";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, newNumeroID, size1, SQLITE_STATIC);
         sqlite3_bind_blob(stmt, 2, oldNumeroID, size2, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             printf("Erreur lors de la mise à jour: %s\n", sqlite3_errmsg(db));
-        }
-        else
-        {
+        } else {
             printf("Electeur mis à jour avec succès\n");
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-void deleteElecteur(sqlite3 *db, const char *numeroID, int size)
-{
+void deleteElecteur(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "DELETE FROM Electeur WHERE numeroID = ?;";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             printf("Erreur lors de la suppression: %s\n", sqlite3_errmsg(db));
-        }
-        else
-        {
+        } else {
             printf("Electeur supprimé avec succès\n");
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-int getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
-{
+int getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT id FROM Electeur WHERE numeroID = ?;";
     int id = -1; // Valeur par défaut si l'ID n'est pas trouvé
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) == SQLITE_ROW)
-        {
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
             id = sqlite3_column_int(stmt, 0); // Récupère l'ID de la première colonne
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 
     return id;
 }
 
-void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char *question, const char *dateDebut, const char *dateFin, const char *status)
-{
+void createElection(sqlite3 *db, const char *identifiant, int sizeId, const char *question, const char *dateDebut,
+                    const char *dateFin, const char *status) {
     sqlite3_stmt *stmt;
     const char *sql = "INSERT INTO Election (identifiant, question, dateDebut, dateFin, status) VALUES (?, ?, ?, ?, ?);";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_blob(stmt, 1, identifiant, sizeId, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, question, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, dateDebut, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 4, dateFin, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 5, status, -1, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             fprintf(stderr, "Erreur lors de l'insertion: %s\n", sqlite3_errmsg(db));
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-int Election_getIdFromIdentifiant(sqlite3 *db, const char *identifiant, int size)
-{
+void readElectionByIdentifiant(sqlite3 *db, const char *identifiant, int sizeId) {
     sqlite3_stmt *stmt;
-    const char *sql = "SELECT id FROM Election WHERE identifiant = ?;";
-    int id = -1; // Valeur par défaut si l'ID n'est pas trouvé
+    const char *sql = "SELECT * FROM Election WHERE identifiant = ?;";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
-        sqlite3_bind_blob(stmt, 1, identifiant, size, SQLITE_STATIC);
-
-        if (sqlite3_step(stmt) == SQLITE_ROW)
-        {
-            id = sqlite3_column_int(stmt, 0); // Récupère l'ID de la première colonne
-        }
-
-        sqlite3_finalize(stmt);
-    }
-    else
-    {
-        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
-    }
-
-    return id;
-}
-
-void readElection(sqlite3 *db, int id)
-{
-    sqlite3_stmt *stmt;
-    const char *sql = "SELECT * FROM Election WHERE id = ?;";
-
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
-        sqlite3_bind_int(stmt, 1, id);
-
-        while (sqlite3_step(stmt) == SQLITE_ROW)
-        {
-            // Supposons que id est la première colonne
-            int id = sqlite3_column_int(stmt, 0);
-            printf("Election: %d\n", id);
-            // Affiche la question de l'élection
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_blob(stmt, 1, identifiant, sizeId, SQLITE_STATIC);
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            const char *id = sqlite3_column_blob(stmt, 0);
+            const char *identifianta = sqlite3_column_blob(stmt, 1);
             const char *question = sqlite3_column_text(stmt, 2);
-            printf("Question: %s\n", question);
-            // Affiche le status de l'élection
+            const char *dateDebut = sqlite3_column_text(stmt, 3);
+            const char *dateFin = sqlite3_column_text(stmt, 4);
             const char *status = sqlite3_column_text(stmt, 5);
+            printf("Election: %s\n", id);
+            printf("Identifiant: %s\n", identifianta);
+            printf("Question: %s\n", question);
+            printf("Date de début: %s\n", dateDebut);
+            printf("Date de fin: %s\n", dateFin);
             printf("Status: %s\n", status);
         }
 
+
         sqlite3_finalize(stmt);
-    }
-    else
-    {
-        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    } else {
+        printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-void updateElection(sqlite3 *db, int id, const char *question)
-{
+void updateElectionByIdentifiant(sqlite3 *db, const char *identifiant, int sizeId, const char *newQuestion) {
     sqlite3_stmt *stmt;
-    const char *sql = "UPDATE Election SET question = ? WHERE id = ?;";
+    const char *sql = "UPDATE Election SET question = ? WHERE identifiant = ?;";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
-        sqlite3_bind_text(stmt, 1, question, -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, 2, id);
-
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
-            fprintf(stderr, "Erreur lors de la mise à jour: %s\n", sqlite3_errmsg(db));
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, newQuestion, -1, SQLITE_STATIC);
+        sqlite3_bind_blob(stmt, 2, identifiant, sizeId, SQLITE_STATIC);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            printf("Erreur lors de la mise à jour: %s\n", sqlite3_errmsg(db));
+        } else {
+            printf("Electeur mis à jour avec succès\n");
         }
-
         sqlite3_finalize(stmt);
-    }
-    else
-    {
-        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    } else {
+        printf("Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
 
-void deleteElection(sqlite3 *db, int id)
-{
+
+void deleteElectionByIdentifiant(sqlite3 *db, const char *identifiant, int identifiantSize) {
     sqlite3_stmt *stmt;
-    const char *sql = "DELETE FROM Election WHERE id = ?;";
+    const char *sql = "DELETE FROM Election WHERE identifiant = ?;";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
-    {
-        sqlite3_bind_int(stmt, 1, id);
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_blob(stmt, 1, identifiant, identifiantSize, SQLITE_STATIC);
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             fprintf(stderr, "Erreur lors de la suppression: %s\n", sqlite3_errmsg(db));
+        } else {
+            printf("Élection avec l'identifiant BLOB supprimée avec succès.\n");
         }
 
         sqlite3_finalize(stmt);
-    }
-    else
-    {
+    } else {
         fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
     }
 }
+
+int electionExists(sqlite3 *db, const char *identifiant, int size) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT COUNT(*) FROM Election WHERE identifiant = ?;";
+    int result = 0;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        // Lie l'identifiant de l'élection à la requête
+        sqlite3_bind_blob(stmt, 1, identifiant, size, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            // Vérifie si le compte est supérieur à 0 pour déterminer si l'élection existe
+            result = sqlite3_column_int(stmt, 0) > 0;
+        }
+
+        // Nettoie l'objet statement pour libérer la mémoire
+        sqlite3_finalize(stmt);
+    } else {
+        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+
+    return result; // Renvoie 1 si l'élection existe, sinon 0
+}
+
+
 
 // usecases election
 
@@ -368,7 +327,7 @@ void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *ch
     // Convertir le choix en un grand nombre
     mpz_t m, c;
     mpz_inits(m, c, NULL);
-    mpz_set_ui(m, (unsigned long int)choix[0]);  // Assumer que le choix est une simple valeur pour la démonstration
+    mpz_set_ui(m, (unsigned long int) choix[0]);  // Assumer que le choix est une simple valeur pour la démonstration
 
     // Chiffrer le choix
     encripter(c, m, n, g);
@@ -397,8 +356,6 @@ void Election_castVote(sqlite3 *db, int idVotant, int idElection, const char *ch
     free(c_str);
 }
 
-
-
 void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, mpz_t n) {
     sqlite3_stmt *stmt;
     const char *sql = "SELECT * FROM Vote WHERE idElection = ?;";
@@ -408,7 +365,7 @@ void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, 
         sqlite3_bind_int(stmt, 1, electionId);
 
         while (sqlite3_step(stmt) == SQLITE_ROW) {
-            const char *c_str = (const char *)sqlite3_column_text(stmt, 4); // ballot
+            const char *c_str = (const char *) sqlite3_column_text(stmt, 4); // ballot
             mpz_t c, m;
             mpz_inits(c, m, NULL);
 
@@ -438,3 +395,82 @@ void Election_processVotes(sqlite3 *db, int electionId, mpz_t lambda, mpz_t mu, 
     }
 }
 
+// Fonction qui vérifie si un vote existe déjà pour un utilisateur et une élection donnés
+int hasUserAlreadyVoted(sqlite3 *db, int idVotant, int idElection) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT COUNT(*) FROM Vote WHERE idVotant = ? AND idElection = ?;";
+    int result = 0;
+
+    // Préparation de la requête SQL
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        // Liaison des paramètres à la requête
+        sqlite3_bind_int(stmt, 1, idVotant);
+        sqlite3_bind_int(stmt, 2, idElection);
+
+        // Exécution de la requête
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            // Récupération du résultat (le nombre de lignes correspondant à la condition)
+            result = sqlite3_column_int(stmt, 0);
+        }
+
+        // Libération de la mémoire associée à l'objet statement
+        sqlite3_finalize(stmt);
+    } else {
+        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+
+    // Si le résultat est supérieur à 0, alors un vote existe déjà pour cet utilisateur et cette élection
+    return result > 0;
+}
+
+
+
+int Election_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
+{
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT id FROM Election WHERE identifiant = ?;";
+    int id = -1; // Valeur par défaut si l'ID n'est pas trouvé
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            id = sqlite3_column_int(stmt, 0); // Récupère l'ID de la première colonne
+        }
+
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+
+    return id;
+}
+
+int Electeur_getIdFromNumeroID(sqlite3 *db, const char *numeroID, int size)
+{
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT id FROM Electeur WHERE numeroID = ?;";
+    int id = -1; // Valeur par défaut si l'ID n'est pas trouvé
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        sqlite3_bind_blob(stmt, 1, numeroID, size, SQLITE_STATIC);
+
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            id = sqlite3_column_int(stmt, 0); // Récupère l'ID de la première colonne
+        }
+
+        sqlite3_finalize(stmt);
+    }
+    else
+    {
+        fprintf(stderr, "Erreur de préparation: %s\n", sqlite3_errmsg(db));
+    }
+
+    return id;
+}

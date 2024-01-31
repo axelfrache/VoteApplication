@@ -14,7 +14,7 @@ extern void* processCommands(void* arg);
 
 void handleElecteurCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
-    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
 
     if (!cmd) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");
@@ -25,30 +25,30 @@ void handleElecteurCRUD(int choix) {
     switch (choix) {
         case 1: // Ajouter Electeur
             cmd->type = AJOUT_ELECTEUR;
-            printf("Entrez l'identifiant de l'électeur à ajouter: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.ajoutElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            printf("Entrez le numeroID de l'électeur à ajouter: ");
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.ajoutElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 2: // Lire Electeur
             cmd->type = LIRE_ELECTEUR;
-            printf("Entrez l'identifiant de l'électeur à lire: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.lireElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            printf("Entrez le numeroID de l'électeur à lire: ");
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.lireElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 3: // Modifier Electeur
             cmd->type = MODIFIER_ELECTEUR;
-            printf("Entrez l'ancien identifiant de l'électeur à modifier: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.modifierElecteur.ancienIdentifiant, identifiant, ENTITY_ID_SIZE-1);
-            printf("Entrez le nouvel identifiant de l'électeur: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.modifierElecteur.nouvelIdentifiant, identifiant, ENTITY_ID_SIZE-1);
+            printf("Entrez l'ancien numeroID de l'électeur à modifier: ");
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
+            printf("Entrez le nouvel numeroID de l'électeur: ");
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
          break;
         case 4: // Supprimer Electeur
             cmd->type = SUPPRIME_ELECTEUR;
-            printf("Entrez l'identifiant de l'électeur à supprimer: ");
-            fgets(identifiant, ENTITY_ID_SIZE, stdin);
-            strncpy(cmd->commande.supprimeElecteur.identifiant, identifiant, ENTITY_ID_SIZE-1);
+            printf("Entrez le numeroID de l'électeur à supprimer: ");
+            fgets(numeroID, ENTITY_ID_SIZE, stdin);
+            strncpy(cmd->commande.supprimeElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 5: // Retour au menu principal
             free(cmd);
@@ -63,7 +63,7 @@ void handleElecteurCRUD(int choix) {
 
 void handleElectionCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
-    char buffer[1024];
+    char buffer[ENTITY_ID_SIZE];
 
     if (!cmd) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");
@@ -87,24 +87,23 @@ void handleElectionCRUD(int choix) {
             break;
         case 2: // Lire Election
             cmd->type = LIRE_ELECTION;
-            notif(GREEN,"Entrez l'ID de l'élection à lire: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            strcpy(cmd->commande.lireElection.identifiant, buffer);
+            printf("Entrez l'identifiant de l'élection à lire: ");
+            fgets(cmd->commande.lireElection.identifiant, ENTITY_ID_SIZE, stdin);
             break;
         case 3: // Modifier Election
             cmd->type = MODIFIER_ELECTION;
-            notif(GREEN,"Entrez l'ID de l'élection à modifier: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            strcpy(cmd->commande.modifierElection.identifiant, buffer);
-            notif(GREEN, "Entrez la nouvelle question de l'élection: ");
-            fgets(cmd->commande.modifierElection.nouvelleQuestion, sizeof(cmd->commande.modifierElection.nouvelleQuestion), stdin);
+            printf("Entrez l'identifiant de l'élection à modifier: ");
+            fgets(cmd->commande.modifierElection.identifiant, ENTITY_ID_SIZE, stdin);
+            printf("Entrez la nouvelle question de l'élection: ");
+            fgets(cmd->commande.modifierElection.nouvelleQuestion, ENTITY_ID_SIZE, stdin);
             break;
+
         case 4: // Supprimer Election
             cmd->type = SUPPRIMER_ELECTION;
-            notif(GREEN,"Entrez l'ID de l'élection à supprimer: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            strcpy(cmd->commande.supprimerElection.identifiant, buffer);
+            printf("Entrez l'identifiant de l'élection à supprimer: ");
+            fgets(cmd->commande.supprimerElection.identifiant, ENTITY_ID_SIZE, stdin);
             break;
+
         case 5: // Retour au menu principal
             free(cmd);
             return;
@@ -118,7 +117,7 @@ void handleElectionCRUD(int choix) {
 
 void handleVoteCRUD(int choix) {
     Commande *cmd = malloc(sizeof(Commande));
-    char buffer[1024];
+    char buffer[ENTITY_ID_SIZE];
 
     if (!cmd) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");
@@ -129,20 +128,21 @@ void handleVoteCRUD(int choix) {
     switch (choix) {
         case 1: // Créer Vote
             cmd->type = CREER_VOTE;
-            notif(GREEN, "Entrez l'identifiant de l'électeur votant: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            cmd->commande.creerVote.idVotant = atoi(buffer);
-            notif(GREEN, "Entrez l'identifiant de l'élection pour le vote: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            strcpy(cmd->commande.creerVote.identifiantElection, buffer);
-            // Ici, tu dois saisir et affecter les données du vote (cmd->commande.creerVote.ballot, etc.) selon ton implémentation
+            printf("Entrez le numéroID de l'électeur votant: ");
+            fgets(cmd->commande.creerVote.numeroID, ENTITY_ID_SIZE, stdin);
+
+            printf("Entrez l'identifiant de l'élection pour le vote: ");
+            fgets(cmd->commande.creerVote.identifiant, ENTITY_ID_SIZE, stdin);
+
+            printf("Entrez le choix du vote: ");
+            fgets(cmd->commande.creerVote.ballot, 256, stdin);
+
             enqueueCommand(cmd);
             break;
         case 2: // Lire les résultats des votes
             cmd->type = LIRE_VOTE;
-            notif(GREEN, "Entrez l'ID de l'élection pour voir les résultats: ");
-            fgets(buffer, sizeof(buffer), stdin);
-            strcpy(cmd->commande.lireVote.idElection, buffer);
+            printf("Entrez l'ID de l'élection pour voir les résultats: ");
+            fgets(cmd->commande.lireVote.identifiant, ENTITY_ID_SIZE, stdin);
             enqueueCommand(cmd);
             break;
         case 3: // Retour au menu principal
@@ -236,7 +236,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Initialiser la base de données en créant les tables nécessaires
+    // Vider la base de données
+    if (clear_database(db) != 0) {
+        fprintf(stderr, "Erreur lors du vidage de la base de données.\n");
+        sqlite3_close(db);
+        return 1;
+    }
+
+    // Initialiser la base de données en recréant les tables nécessaires
     if (database_init(db) != 0) {
         fprintf(stderr, "Erreur lors de l'initialisation de la base de données.\n");
         sqlite3_close(db);

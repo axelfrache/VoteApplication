@@ -73,11 +73,12 @@ typedef struct {
 
 // Structure de commande pour créer un vote
 typedef struct {
-    int idElection;
-    int idVotant;
+    char identifiant[ENTITY_ID_SIZE];
+    char numeroID[ENTITY_ID_SIZE];
     char ballot[256];
     char hashValidation[256];
 } CreerVoteCmd;
+
 
 // Structure de commande pour lire un vote
 typedef struct {

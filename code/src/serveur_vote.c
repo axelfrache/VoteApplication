@@ -277,6 +277,10 @@ void traitementSupprimerElection(SupprimerElectionCmd *cmd) {
 void traitementCreerVote(CreerVoteCmd *cmd) {
     printf("Traitement CreerVoteCmd\n");
 
+    // Initialisation des variables GMP pour la cryptographie
+    mpz_t n, g, lambda, mu;
+    mpz_inits(n, g, lambda, mu, NULL);
+
     // Générer les clés publiques et privées (n, g, lambda, mu)
     generate_keys(n, lambda, g, mu);  // Utilise la fonction fournie pour générer les clés
 
@@ -288,39 +292,29 @@ void traitementCreerVote(CreerVoteCmd *cmd) {
     }
 
     // Récupéré l'id d'électeur avec l'identifiant
-    int idVotant = Electeur_getIdFromNumeroID(&db, cmd->numeroID, ENTITY_ID_SIZE);
-    int idElection = Election_getIdFromNumeroID(&db,cmd->identifiant, ENTITY_ID_SIZE);
+    int idVotant = Electeur_getIdFromNumeroID(db, cmd->numeroID, ENTITY_ID_SIZE);
+    int idElection = Election_getIdFromNumeroID(db,cmd->identifiant, ENTITY_ID_SIZE);
 
     //Affchage des valeurs récupérées
     printf("idVotant : %d\n", idVotant);
     printf("idElection : %d\n", idElection);
 
 
-    /*if (cmd == NULL || cmd->idElection < 1 || cmd->idVotant < 1) {
+    if (cmd == NULL || idElection < 1 || idVotant < 1) {
         printf("Commande invalide ou données manquantes pour le vote.\n");
         return;
     }
-
-    // Initialisation des variables GMP pour la cryptographie
-    mpz_t n, g, lambda, mu;
-    mpz_inits(n, g, lambda, mu, NULL);
-
-
-
-    // Ouvre la base de données
-
-
     // Vérification si l'utilisateur a déjà voté
-    if (hasUserAlreadyVoted(db, cmd->idVotant, cmd->idElection)) {
-        printf("L'électeur avec l'ID %d a déjà voté pour l'élection %d.\n", cmd->idVotant, cmd->idElection);
+    if (hasUserAlreadyVoted(db, idVotant, idElection)) {
+        printf("L'électeur avec l'ID %d a déjà voté pour l'élection %d.\n", idVotant, idElection);
     } else {
         // Chiffrement et enregistrement du vote
-        Election_castVote(db, cmd->idVotant, cmd->idElection, cmd->ballot, n, g);
+        Election_castVote(db, idVotant, idElection, cmd->ballot, n, g);
     }
 
     // Libération des ressources GMP et de la base de données
     mpz_clears(n, g, lambda, mu, NULL);
-    sqlite3_close(db);*/
+    sqlite3_close(db);
 }
 
 void traitementLireVote(LireVoteCmd *cmd) {

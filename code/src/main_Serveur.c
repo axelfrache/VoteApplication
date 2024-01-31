@@ -23,28 +23,28 @@ void handleElecteurCRUD(int choix) {
     switch (choix) {
         case 1: // Ajouter Electeur
             cmd->type = AJOUT_ELECTEUR;
-            printf("Entrez l'identifiant de l'électeur à ajouter: ");
+            printf("Entrez le numeroID de l'électeur à ajouter: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
             strncpy(cmd->commande.ajoutElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 2: // Lire Electeur
             cmd->type = LIRE_ELECTEUR;
-            printf("Entrez l'identifiant de l'électeur à lire: ");
+            printf("Entrez le numeroID de l'électeur à lire: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
             strncpy(cmd->commande.lireElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;
         case 3: // Modifier Electeur
             cmd->type = MODIFIER_ELECTEUR;
-            printf("Entrez l'ancien identifiant de l'électeur à modifier: ");
+            printf("Entrez l'ancien numeroID de l'électeur à modifier: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
             strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
-            printf("Entrez le nouvel identifiant de l'électeur: ");
+            printf("Entrez le nouvel numeroID de l'électeur: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
             strncpy(cmd->commande.modifierElecteur.ancienNumeroID, numeroID, ENTITY_ID_SIZE-1);
          break;
         case 4: // Supprimer Electeur
             cmd->type = SUPPRIME_ELECTEUR;
-            printf("Entrez l'identifiant de l'électeur à supprimer: ");
+            printf("Entrez le numeroID de l'électeur à supprimer: ");
             fgets(numeroID, ENTITY_ID_SIZE, stdin);
             strncpy(cmd->commande.supprimeElecteur.numeroID, numeroID, ENTITY_ID_SIZE-1);
             break;

@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         traitementCreerElection(cmd1);
 
         int localid = getIdFromNumeroID(db, id, ID_SIZE);
-        g_print("Numero ID when returned : %d", localid);
+        g_assert(localid != -1);
 
         // createElecteur(db, id2, 10);
 
